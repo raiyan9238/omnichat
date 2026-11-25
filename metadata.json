@@ -1,0 +1,8 @@
+{
+  "name": "OmniBook.ai",
+  "description": "24/7 AI Receptionist & Appointment Booking Orchestration across Phone, Messenger, Instagram & Web.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

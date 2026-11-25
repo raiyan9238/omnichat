@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OmniBook.ai - 24/7 AI Receptionist &amp; Appointment Booking Orchestration</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0f172a",
+            "secondary": "#0051d5",
+            "accent-hover": "#1D4ED8",
+            "surface": "#f8f9ff",
+            "surface-card": "#FFFFFF",
+            "surface-border": "#E2E8F0",
+            "surface-container": "#e5eeff",
+            "surface-container-low": "#eff4ff",
+            "surface-container-high": "#dce9ff",
+            "surface-container-lowest": "#ffffff",
+            "on-surface": "#0b1c30",
+            "text-main": "#1E293B",
+            "text-muted": "#64748B",
+            "channel-web": "#0D9488",
+            "channel-voice": "#7C3AED",
+            "channel-messenger": "#0084FF",
+            "channel-instagram": "#E1306C",
+            "badge-web-bg": "#F0FDFA",
+            "badge-web-text": "#0F766E",
+            "badge-voice-bg": "#F5F3FF",
+            "badge-voice-text": "#6D28D9",
+            "badge-messenger-bg": "#EFF6FF",
+            "badge-messenger-text": "#1D4ED8",
+            "badge-instagram-bg": "#FDF2F8",
+            "badge-instagram-text": "#BE185D",
+            "status-success": "#16A34A",
+            "status-warning": "#F59E0B",
+            "status-danger": "#DC2626"
+          },
+          fontFamily: {
+            body: ["Inter", "sans-serif"],
+            display: ["Plus Jakarta Sans", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    body { font-family: 'Inter', sans-serif; overscroll-behavior: none; }
+    .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased selection:bg-secondary/20 selection:text-secondary">
+<!-- ================= TOAST NOTIFICATION CONTAINER ================= -->
+<div class="fixed bottom-6 right-6 z-[100] transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border bg-white text-on-surface" id="toast">
+<span class="material-symbols-outlined text-[20px] text-status-success" id="toast-icon">check_circle</span>
+<span class="text-sm font-medium" id="toast-text">Action successful</span>
+</div>
+<!-- ================= 1. NAVIGATION BAR ================= -->
+<header class="fixed top-0 left-0 right-0 w-full z-40 bg-surface-card/90 backdrop-blur-xl border-b border-surface-border">
+<div class="h-16 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between gap-4">
+<!-- Logo + Live Orchestration Pill -->
+<div class="flex items-center gap-3">
+<a class="flex items-center gap-2" href="#">
+<div class="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-display font-extrabold text-lg shadow-sm">
+<span class="material-symbols-outlined text-[20px] text-blue-400">calendar_month</span>
+</div>
+<span class="font-display text-lg font-bold tracking-tight text-on-surface">OmniBook<span class="text-secondary">.ai</span></span>
+</a>
+<button class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-badge-web-bg text-badge-web-text font-mono text-[11px] font-semibold hover:bg-teal-100 transition-colors cursor-pointer border border-channel-web/20" onclick="showToast('Cluster Health: 99.99% | All 4 Omni-Channel Pipes Online', 'info')" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-channel-web animate-pulse"></span>
+<span>LIVE ORCHESTRATION</span>
+</button>
+</div>
+<!-- Nav Links -->
+<nav class="hidden lg:flex items-center gap-6">
+<a class="text-sm font-medium text-text-muted hover:text-secondary transition-colors" href="#features">Features</a>
+<a class="text-sm font-medium text-text-muted hover:text-secondary transition-colors" href="#channels">Channels</a>
+<a class="text-sm font-medium text-text-muted hover:text-secondary transition-colors" href="#simulator">Simulator</a>
+<a class="text-sm font-medium text-text-muted hover:text-secondary transition-colors" href="#integrations">Integrations</a>
+<a class="text-sm font-medium text-text-muted hover:text-secondary transition-colors" href="#roi-calculator">ROI Calculator</a>
+<a class="text-sm font-medium text-text-muted hover:text-secondary transition-colors" href="#pricing">Pricing</a>
+</nav>
+<!-- Nav CTAs -->
+<div class="flex items-center gap-2.5">
+<button class="hidden md:inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-on-surface hover:bg-surface-container-low transition-all" onclick="openSignInModal()" type="button">
+          Sign In
+        </button>
+<button class="hidden sm:inline-flex items-center px-3.5 py-2 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container text-sm font-semibold transition-all" onclick="openOnboardingModal('Book Practice Setup Call')" type="button">
+          Book Demo
+        </button>
+<button class="inline-flex items-center px-4 py-2 rounded-lg bg-secondary text-white hover:bg-accent-hover text-sm font-semibold shadow-sm shadow-secondary/30 transition-all" onclick="openOnboardingModal('14-Day Free Practice Trial')" type="button">
+          Start 14-Day Free Trial
+        </button>
+</div>
+</div>
+</header>
+<!-- ================= MAIN CONTENT ================= -->
+<main class="w-full pt-16 min-h-screen">
+<!-- ================= 2. HERO & INTERACTIVE SIMULATOR ================= -->
+<section class="relative w-full overflow-hidden bg-surface py-12 lg:py-18 border-b border-surface-border">
+<div class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col items-center">
+<!-- Live Status Pill -->
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-badge-web-bg border border-channel-web/25 shadow-xs mb-6">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-channel-web opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-channel-web"></span>
+</span>
+<span class="font-mono text-xs uppercase text-badge-web-text font-bold tracking-wider">AI-POWERED BOOKING ORCHESTRATION</span>
+</div>
+<!-- Main Headline -->
+<h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-center text-on-surface max-w-4xl tracking-tight leading-tight">
+          Zero Missed Calls. Zero Lost Bookings.<br/>
+<span class="text-secondary">24/7 AI Receptionist</span> across Phone, Messenger, Instagram &amp; Web.
+        </h1>
+<!-- Subhead -->
+<p class="mt-5 text-base sm:text-lg text-text-muted text-center max-w-3xl leading-relaxed">
+          Connect your existing scheduler in 5 minutes. The AI agent handles availability queries, books appointments, processes reschedules, and escalates edge cases with zero shadow calendars.
+        </p>
+<!-- Actions -->
+<div class="mt-8 flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto">
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-secondary text-white font-semibold hover:bg-accent-hover transition-all shadow-md shadow-secondary/25" onclick="triggerLiveSimulatorDemo()" type="button">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+<span>Try Live Interactive Demo Agent</span>
+</button>
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-surface-card border border-surface-border text-on-surface font-semibold hover:bg-surface-container-low transition-all shadow-xs" onclick="openOnboardingModal('Schedule Practice Architecture Call')" type="button">
+<span class="material-symbols-outlined text-[20px] text-text-muted">calendar_today</span>
+<span>Book Setup Call</span>
+</button>
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-surface-container-high border border-surface-border text-on-surface font-semibold hover:bg-surface-container transition-all" onclick="openBookingModal()" type="button">
+<span class="material-symbols-outlined text-[19px] text-secondary">preview</span>
+<span>Preview Booking Modal</span>
+<span class="px-2 py-0.5 rounded-full font-mono text-[10px] bg-badge-web-bg text-badge-web-text font-bold">SPEC 6.1</span>
+</button>
+</div>
+<div class="mt-4 flex items-center gap-2 text-text-muted text-xs sm:text-sm text-center">
+<span class="material-symbols-outlined text-status-success text-[18px]">verified</span>
+<span>Trusted by 1,200+ clinics, spas, salons &amp; practices • <strong class="text-on-surface font-semibold">99.4% booking accuracy</strong></span>
+</div>
+<!-- ================= DUAL-VIEWPORT INTERACTIVE ENGINE ================= -->
+<div class="mt-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start" id="simulator">
+<!-- LEFT VIEWPORT: Multi-Channel Conversation Simulator -->
+<div class="lg:col-span-7 bg-surface-card rounded-2xl border border-surface-border shadow-xl p-5 sm:p-6 flex flex-col min-h-[560px]">
+<!-- Channels Bar -->
+<div class="flex items-center justify-between pb-3 border-b border-surface-border flex-wrap gap-2">
+<span class="font-mono text-xs text-text-muted uppercase tracking-wider font-semibold">Live Agent Channel:</span>
+<div class="flex items-center gap-1 p-1 bg-surface-container-low rounded-lg" id="channel-tabs">
+<button class="px-3 py-1.5 rounded-md font-mono text-xs transition-all flex items-center gap-1.5 bg-badge-instagram-bg text-badge-instagram-text font-bold shadow-xs" id="tab-ig" onclick="switchChannel('ig')" type="button">
+<span class="w-2 h-2 rounded-full bg-[#E1306C]"></span> Instagram DM
+                </button>
+<button class="px-3 py-1.5 rounded-md font-mono text-xs transition-all flex items-center gap-1.5 text-text-muted hover:text-on-surface" id="tab-messenger" onclick="switchChannel('messenger')" type="button">
+<span class="w-2 h-2 rounded-full bg-[#0084FF]"></span> Messenger
+                </button>
+<button class="px-3 py-1.5 rounded-md font-mono text-xs transition-all flex items-center gap-1.5 text-text-muted hover:text-on-surface" id="tab-web" onclick="switchChannel('web')" type="button">
+<span class="w-2 h-2 rounded-full bg-channel-web"></span> Web Chat
+                </button>
+<button class="px-3 py-1.5 rounded-md font-mono text-xs transition-all flex items-center gap-1.5 text-text-muted hover:text-on-surface" id="tab-voice" onclick="switchChannel('voice')" type="button">
+<span class="w-2 h-2 rounded-full bg-channel-voice"></span> Voice Call
+                </button>
+</div>
+</div>
+<!-- Active Header -->
+<div class="flex items-center justify-between py-3 border-b border-surface-border/50">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-badge-instagram-bg text-badge-instagram-text flex items-center justify-center shrink-0" id="channel-avatar">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</div>
+<div>
+<div class="font-display text-sm font-bold text-on-surface" id="channel-header-title">OmniBook Wellness Clinic (@omnicare_la)</div>
+<div class="font-mono text-[11px] text-status-success flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span> Active AI Orchestrator • Instant Sync
+                  </div>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded font-mono text-[11px] bg-surface-container text-on-surface font-semibold" id="channel-latency">
+                Latency: 280ms
+              </span>
+</div>
+<!-- Message Stream -->
+<div class="flex-1 space-y-3 py-4 overflow-y-auto max-h-[380px]" id="chat-messages">
+<!-- Message 1: Customer -->
+<div class="flex items-start gap-2.5 justify-end">
+<div class="bg-secondary text-white rounded-2xl rounded-tr-xs px-4 py-2.5 max-w-[85%] shadow-xs">
+<p class="text-xs sm:text-sm">Do you have any openings for a 60-min Deep Tissue Massage this Thursday afternoon with Sarah?</p>
+<div class="text-[10px] text-blue-200 font-mono text-right mt-1">1:42 PM • Delivered</div>
+</div>
+<div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface">JD</div>
+</div>
+<!-- Message 2: AI Reply -->
+<div class="flex items-start gap-2.5">
+<div class="w-7 h-7 rounded-full bg-secondary text-white flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[15px]">smart_toy</span>
+</div>
+<div class="bg-surface-container-low text-on-surface rounded-2xl rounded-tl-xs px-4 py-2.5 max-w-[85%] border border-surface-border">
+<p class="text-xs sm:text-sm">Yes! Sarah has <strong class="text-secondary font-bold">2:30 PM</strong> and <strong class="text-secondary font-bold">4:15 PM</strong> available this Thursday. Would 2:30 PM work for you?</p>
+<div class="text-[10px] text-text-muted font-mono mt-1">1:42 PM • AI Verified via Mindbody API</div>
+</div>
+</div>
+<!-- Message 3: Customer -->
+<div class="flex items-start gap-2.5 justify-end">
+<div class="bg-secondary text-white rounded-2xl rounded-tr-xs px-4 py-2 max-w-[85%] shadow-xs">
+<p class="text-xs sm:text-sm">2:30 PM works great.</p>
+<div class="text-[10px] text-blue-200 font-mono text-right mt-1">1:43 PM • Delivered</div>
+</div>
+<div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface">JD</div>
+</div>
+<!-- Message 4: Interactive Confirmation Card -->
+<div class="flex items-start gap-2.5">
+<div class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[15px]">task_alt</span>
+</div>
+<div class="bg-surface-card rounded-xl border border-surface-border shadow-md p-3.5 w-full max-w-[90%]">
+<div class="flex items-center justify-between pb-2 border-b border-surface-border">
+<span class="font-display text-xs font-bold text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-status-success text-[16px]">verified</span>
+                      Pre-Booking Review
+                    </span>
+<span class="px-2 py-0.5 rounded-full font-mono text-[9px] bg-badge-web-bg text-badge-web-text font-bold uppercase" id="slot-status-badge">Ready to Commit</span>
+</div>
+<div class="grid grid-cols-2 gap-2 my-2 text-xs">
+<div class="p-2 bg-surface-container-low rounded-lg">
+<div class="font-mono text-[9px] uppercase text-text-muted">Service</div>
+<div class="font-bold text-on-surface">Deep Tissue (60m)</div>
+</div>
+<div class="p-2 bg-surface-container-low rounded-lg">
+<div class="font-mono text-[9px] uppercase text-text-muted">Specialist</div>
+<div class="font-bold text-on-surface">Sarah Jenkins, LMT</div>
+</div>
+<div class="p-2 bg-surface-container-low rounded-lg">
+<div class="font-mono text-[9px] uppercase text-text-muted">Slot</div>
+<div class="font-bold text-on-surface">Thu • 2:30 PM</div>
+</div>
+<div class="p-2 bg-surface-container-low rounded-lg">
+<div class="font-mono text-[9px] uppercase text-text-muted">Total</div>
+<div class="font-bold text-secondary">$145.00</div>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-2">
+<button class="flex-1 py-1.5 px-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold transition-colors" onclick="openBookingModal()" type="button">
+                      Review Details
+                    </button>
+<button class="flex-1 py-1.5 px-2 rounded-lg bg-secondary hover:bg-accent-hover text-white text-xs font-semibold transition-colors" id="inchat-book-btn" onclick="confirmInChatSlot()" type="button">
+                      Confirm &amp; Book Slot
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Simulator Quick Input Field -->
+<form class="mt-auto pt-3 border-t border-surface-border flex items-center gap-2" onsubmit="handleSendSimulationMessage(event)">
+<input class="flex-1 bg-surface-container-low rounded-lg px-3 py-2 text-xs sm:text-sm text-on-surface border border-surface-border focus:outline-none focus:border-secondary" id="sim-input" placeholder="Type custom reply (e.g., 'What about Friday?', 'Can I cancel?')..." type="text"/>
+<button class="w-9 h-9 rounded-lg bg-secondary text-white flex items-center justify-center shrink-0 hover:bg-accent-hover transition-colors" type="submit">
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</form>
+</div>
+<!-- RIGHT VIEWPORT: Scheduler Sync Engine & Live Event Stream -->
+<div class="lg:col-span-5 bg-surface-card rounded-2xl border border-surface-border shadow-xl p-5 sm:p-6 flex flex-col min-h-[560px]">
+<div class="flex items-center justify-between pb-3 border-b border-surface-border">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-channel-web text-[20px]">sync_alt</span>
+<span class="font-display text-sm font-bold text-on-surface">Scheduler Sync Live Engine</span>
+</div>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded bg-badge-web-bg text-badge-web-text font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span> 24ms
+              </span>
+</div>
+<!-- Provider Connection Metadata -->
+<div class="bg-surface-container-low rounded-xl p-3 my-3 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-white flex items-center justify-center font-bold text-xs text-primary shadow-xs">MB</div>
+<div>
+<div class="text-xs font-bold text-on-surface">Mindbody / Google Cal API</div>
+<div class="font-mono text-[10px] text-text-muted">Bi-directional zero shadow lock</div>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-status-success/15 text-status-success" id="sync-state-pill">COMMITTED</span>
+</div>
+<!-- Visual Timeline -->
+<div class="flex items-center justify-between font-mono text-[11px] text-text-muted uppercase mb-2">
+<span>Thursday, Oct 24</span>
+<span>Room #3 (Therapy)</span>
+</div>
+<div class="space-y-2 text-xs flex-1">
+<!-- Slot 1 -->
+<div class="flex items-center gap-2">
+<span class="w-14 font-mono text-[11px] text-text-muted">1:00 PM</span>
+<div class="flex-1 bg-surface-container rounded-lg p-2 text-text-muted flex items-center justify-between">
+<span>Sarah J. • Consultation</span>
+<span class="font-mono text-[10px]">Completed</span>
+</div>
+</div>
+<!-- Sanitization Buffer -->
+<div class="flex items-center gap-2 pl-14">
+<div class="w-full py-1 px-2.5 rounded bg-amber-50 border border-dashed border-status-warning/40 text-[10px] font-mono text-amber-800 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px] text-status-warning">cleaning_services</span>
+<span>Auto-Buffer: 15-min Room Sanitization</span>
+</div>
+</div>
+<!-- Slot 2 (Target Slot) -->
+<div class="flex items-center gap-2">
+<span class="w-14 font-mono text-[11px] font-bold text-secondary">2:30 PM</span>
+<div class="flex-1 bg-badge-web-bg border-2 border-channel-web rounded-lg p-2.5 shadow-xs relative overflow-hidden transition-all" id="locked-slot-card">
+<div class="flex items-center justify-between">
+<span class="font-bold text-badge-web-text text-xs">Sarah J. — Deep Tissue (60m)</span>
+<span class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-channel-web text-white" id="slot-lock-label">AI LOCKED</span>
+</div>
+<div class="text-[11px] text-text-muted mt-0.5 flex items-center gap-1.5">
+<span>Patient: Jane Doe</span>
+<span>•</span>
+<span id="slot-source-label">Instagram Direct</span>
+</div>
+</div>
+</div>
+<!-- Sanitization Buffer -->
+<div class="flex items-center gap-2 pl-14">
+<div class="w-full py-1 px-2.5 rounded bg-amber-50 border border-dashed border-status-warning/40 text-[10px] font-mono text-amber-800 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px] text-status-warning">cleaning_services</span>
+<span>Auto-Buffer: 15-min Turnover</span>
+</div>
+</div>
+<!-- Slot 3 -->
+<div class="flex items-center gap-2">
+<span class="w-14 font-mono text-[11px] text-text-muted">4:15 PM</span>
+<div class="flex-1 border border-dashed border-surface-border rounded-lg p-2 text-text-muted flex items-center justify-between">
+<span>Available Open Slot</span>
+<span class="font-mono text-[10px] text-secondary">Suggested by AI</span>
+</div>
+</div>
+</div>
+<!-- Realtime Event Log -->
+<div class="mt-4 pt-3 border-t border-surface-border">
+<div class="font-mono text-[10px] uppercase text-text-muted tracking-wider mb-1.5 flex items-center justify-between">
+<span>Realtime Event Stream</span>
+<span class="text-status-success font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-status-success animate-ping"></span> Live</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2.5 font-mono text-[10px] space-y-1 text-on-surface max-h-[85px] overflow-y-auto" id="event-log-container">
+<div class="flex items-center justify-between text-status-success font-medium">
+<span>[13:42:04] SLOT_RESERVE_TOKEN_ISSUED</span>
+<span>#8841-B</span>
+</div>
+<div class="flex items-center justify-between text-text-muted">
+<span>[13:42:05] CONFLICT_CHECK_0_COLLISIONS</span>
+<span>PASS (24ms)</span>
+</div>
+<div class="flex items-center justify-between text-secondary font-medium">
+<span>[13:43:10] MINDBODY_WRITE_200_OK</span>
+<span>SYNCED</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= 3. OMNI-CHANNEL PARITY SECTION (#channels) ================= -->
+<section class="w-full py-16 lg:py-20 bg-surface-container-lowest border-b border-surface-border" id="channels">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="text-center max-w-2xl mx-auto mb-12">
+<div class="font-mono text-xs uppercase text-secondary font-bold tracking-wider mb-2">Omni-Channel Parity</div>
+<h2 class="font-display text-2xl sm:text-3xl font-bold text-on-surface">
+            Four Channels. One Autonomous Brain.
+          </h2>
+<p class="text-sm sm:text-base text-text-muted mt-2">
+            Every conversation synchronizes to a singular real-time calendar state. Click any channel to test capabilities.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Voice -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-6 shadow-xs hover:shadow-md hover:border-secondary/40 transition-all cursor-pointer group flex flex-col justify-between" onclick="openChannelDetail('voice')">
+<div>
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 rounded-xl bg-badge-voice-bg text-channel-voice flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[22px]">phone_in_talk</span>
+</div>
+<span class="font-mono text-xs px-2.5 py-1 rounded bg-badge-voice-bg text-badge-voice-text font-bold">P95 &lt; 1.1s Latency</span>
+</div>
+<h3 class="font-display text-lg font-bold text-on-surface group-hover:text-secondary transition-colors">Ultra-Low Latency Telephony</h3>
+<p class="text-sm text-text-muted mt-2 leading-relaxed">
+                Natural turn-taking, barge-in cancellation, and medical pronunciation awareness. Handles complex phone negotiations without robotic transfers.
+              </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-border flex items-center justify-between text-xs font-mono text-text-muted">
+<span>SIP &amp; Twilio Trunking</span>
+<span class="text-status-success font-semibold flex items-center gap-1">Test Voice Agent →</span>
+</div>
+</div>
+<!-- Facebook Messenger -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-6 shadow-xs hover:shadow-md hover:border-secondary/40 transition-all cursor-pointer group flex flex-col justify-between" onclick="openChannelDetail('messenger')">
+<div>
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 rounded-xl bg-badge-messenger-bg text-channel-messenger flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[22px]">chat</span>
+</div>
+<span class="font-mono text-xs px-2.5 py-1 rounded bg-badge-messenger-bg text-badge-messenger-text font-bold">Instant Auto-Reply</span>
+</div>
+<h3 class="font-display text-lg font-bold text-on-surface group-hover:text-secondary transition-colors">Meta Page Concierge</h3>
+<p class="text-sm text-text-muted mt-2 leading-relaxed">
+                Turns Meta ad clicks and business page messages into confirmed calendar reservations within 3 exchanges with horizontal slot carousels.
+              </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-border flex items-center justify-between text-xs font-mono text-text-muted">
+<span>Meta Graph API v20</span>
+<span class="text-status-success font-semibold flex items-center gap-1">Test Messenger →</span>
+</div>
+</div>
+<!-- Instagram DM -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-6 shadow-xs hover:shadow-md hover:border-secondary/40 transition-all cursor-pointer group flex flex-col justify-between" onclick="openChannelDetail('instagram')">
+<div>
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 rounded-xl bg-badge-instagram-bg text-channel-instagram flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[22px]">photo_camera</span>
+</div>
+<span class="font-mono text-xs px-2.5 py-1 rounded bg-badge-instagram-bg text-badge-instagram-text font-bold">Bio &amp; Story Inbound</span>
+</div>
+<h3 class="font-display text-lg font-bold text-on-surface group-hover:text-secondary transition-colors">Instagram DM Agent</h3>
+<p class="text-sm text-text-muted mt-2 leading-relaxed">
+                Transforms "How much for botox/massage?" comments, story reactions, and bio clicks into committed bookings while client intent is highest.
+              </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-border flex items-center justify-between text-xs font-mono text-text-muted">
+<span>Direct Booking Cards</span>
+<span class="text-status-success font-semibold flex items-center gap-1">Test Instagram →</span>
+</div>
+</div>
+<!-- Web Chat Widget -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-6 shadow-xs hover:shadow-md hover:border-secondary/40 transition-all cursor-pointer group flex flex-col justify-between" onclick="openChannelDetail('web')">
+<div>
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 rounded-xl bg-badge-web-bg text-channel-web flex items-center justify-center font-bold">
+<span class="material-symbols-outlined text-[22px]">web</span>
+</div>
+<span class="font-mono text-xs px-2.5 py-1 rounded bg-badge-web-bg text-badge-web-text font-bold">1-Click Booking Sheet</span>
+</div>
+<h3 class="font-display text-lg font-bold text-on-surface group-hover:text-secondary transition-colors">Embeddable Web Concierge</h3>
+<p class="text-sm text-text-muted mt-2 leading-relaxed">
+                High-velocity micro-script (&lt;8kb) embedding into Webflow, WordPress, or React. Provides calendar sheet overlays without redirecting users.
+              </p>
+</div>
+<div class="mt-4 pt-3 border-t border-surface-border flex items-center justify-between text-xs font-mono text-text-muted">
+<span>Zero Layout Shift</span>
+<span class="text-status-success font-semibold flex items-center gap-1">Test Web Widget →</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= 4. CLINICAL ARCHITECTURE FEATURES (#features) ================= -->
+<section class="w-full py-16 lg:py-20 bg-surface border-b border-surface-border" id="features">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+<div>
+<div class="font-mono text-xs uppercase text-secondary font-bold tracking-wider mb-2">Clinical Precision Architecture</div>
+<h2 class="font-display text-2xl sm:text-3xl font-bold text-on-surface">Built for Real Practice Workflows</h2>
+</div>
+<p class="text-sm text-text-muted max-w-md">
+            Generic chatbots fail on real clinical conflicts and room cleanings. OmniBook is engineered specifically for appointment booking certainty.
+          </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Pillar 1 -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-5 flex flex-col shadow-xs">
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-secondary flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[22px]">cloud_sync</span>
+</div>
+<h3 class="font-display text-base font-bold text-on-surface mb-2">Source-of-Truth Sync</h3>
+<p class="text-xs sm:text-sm text-text-muted mb-4 flex-1">
+              Direct 2-way read/write with Google Calendar, Mindbody, Jane, and Acuity. Eliminates duplicate bookings and shadow calendars permanently.
+            </p>
+<div class="font-mono text-[11px] text-channel-web font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock_reset</span> Sub-second atomic lock
+            </div>
+</div>
+<!-- Pillar 2 -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-5 flex flex-col shadow-xs">
+<div class="w-10 h-10 rounded-xl bg-amber-50 text-status-warning flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[22px]">timelapse</span>
+</div>
+<h3 class="font-display text-base font-bold text-on-surface mb-2">Intelligent Buffering</h3>
+<p class="text-xs sm:text-sm text-text-muted mb-4 flex-1">
+              Automatically inserts customized turnover buffers—from 15-minute sanitization to provider travel time—ensuring no staff burnout.
+            </p>
+<div class="font-mono text-[11px] text-status-warning font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">nest_heat_link_gen_3</span> Automated buffer rules
+            </div>
+</div>
+<!-- Pillar 3 -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-5 flex flex-col shadow-xs">
+<div class="w-10 h-10 rounded-xl bg-red-50 text-status-danger flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[22px]">phone_forwarded</span>
+</div>
+<h3 class="font-display text-base font-bold text-on-surface mb-2">Frictionless Handoff</h3>
+<p class="text-xs sm:text-sm text-text-muted mb-4 flex-1">
+              Instant warm transfer to front desk staff with complete chat transcript, phone number, and intent entities when edge cases arise.
+            </p>
+<div class="font-mono text-[11px] text-status-danger font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">support_agent</span> Zero-loss escalation
+            </div>
+</div>
+<!-- Pillar 4 -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-5 flex flex-col shadow-xs">
+<div class="w-10 h-10 rounded-xl bg-purple-50 text-channel-voice flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-[22px]">domain</span>
+</div>
+<h3 class="font-display text-base font-bold text-on-surface mb-2">Multi-Location &amp; Rules</h3>
+<p class="text-xs sm:text-sm text-text-muted mb-4 flex-1">
+              Segment clinics by location, provider service menus, pricing tables, intake questions, and deposit cancellation rules effortlessly.
+            </p>
+<div class="font-mono text-[11px] text-channel-voice font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">tune</span> Branch-specific logic
+            </div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= 5. INTERACTIVE ROI CALCULATOR (#roi-calculator) ================= -->
+<section class="w-full py-16 lg:py-20 bg-surface-container-lowest border-b border-surface-border" id="roi-calculator">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="max-w-2xl mb-10">
+<div class="font-mono text-xs uppercase text-secondary font-bold tracking-wider mb-2">Financial Impact Estimator</div>
+<h2 class="font-display text-2xl sm:text-3xl font-bold text-on-surface">Calculate Your Missed Call Recovery</h2>
+<p class="text-sm sm:text-base text-text-muted mt-2">
+            Practices miss up to 28% of incoming booking requests during peak rushes and after-hours. Adjust the sliders below to see your reclaimed revenue.
+          </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<!-- Interactive Sliders -->
+<div class="lg:col-span-6 bg-surface-card rounded-2xl border border-surface-border p-6 shadow-sm">
+<!-- Slider 1 -->
+<div class="mb-6">
+<div class="flex items-center justify-between mb-2">
+<label class="text-xs sm:text-sm font-semibold text-on-surface" for="calls-slider">Estimated Inbound Calls &amp; Inquiries / Month</label>
+<span class="font-mono font-bold text-secondary text-sm bg-surface-container-low px-2.5 py-1 rounded" id="calls-display">500 calls</span>
+</div>
+<input class="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-secondary" id="calls-slider" max="3000" min="100" oninput="updateROI()" step="50" type="range" value="500"/>
+<div class="flex justify-between font-mono text-[10px] text-text-muted mt-1.5">
+<span>100</span>
+<span>1,500</span>
+<span>3,000+</span>
+</div>
+</div>
+<!-- Slider 2 -->
+<div class="mb-4">
+<div class="flex items-center justify-between mb-2">
+<label class="text-xs sm:text-sm font-semibold text-on-surface" for="ticket-slider">Average Booking / Ticket Value ($)</label>
+<span class="font-mono font-bold text-secondary text-sm bg-surface-container-low px-2.5 py-1 rounded" id="ticket-display">$120</span>
+</div>
+<input class="w-full h-2 bg-surface-container rounded-lg appearance-none cursor-pointer accent-secondary" id="ticket-slider" max="1000" min="30" oninput="updateROI()" step="10" type="range" value="120"/>
+<div class="flex justify-between font-mono text-[10px] text-text-muted mt-1.5">
+<span>$30</span>
+<span>$500</span>
+<span>$1,000</span>
+</div>
+</div>
+<div class="mt-6 p-3 rounded-xl bg-surface-container-low text-text-muted text-xs flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">verified</span>
+<span>Based on verified 16.8% after-hours recovery rate benchmarked across 1,200 practices.</span>
+</div>
+</div>
+<!-- Dynamic Output Grid -->
+<div class="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-surface-card rounded-2xl border border-surface-border p-6 shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="font-mono text-xs uppercase text-text-muted font-semibold">Rescued Bookings</span>
+<span class="material-symbols-outlined text-channel-web text-[20px]">event_available</span>
+</div>
+<div class="font-display text-3xl sm:text-4xl font-extrabold text-secondary tracking-tight" id="roi-bookings">+84</div>
+<div class="mt-2 font-mono text-xs text-status-success font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">trending_up</span> +16.8% volume lift
+              </div>
+</div>
+<div class="bg-surface-card rounded-2xl border border-surface-border p-6 shadow-sm">
+<div class="flex items-center justify-between mb-1">
+<span class="font-mono text-xs uppercase text-text-muted font-semibold">Monthly Revenue Lift</span>
+<span class="material-symbols-outlined text-status-success text-[20px]">attach_money</span>
+</div>
+<div class="font-display text-3xl sm:text-4xl font-extrabold text-status-success tracking-tight" id="roi-revenue">+$10,080</div>
+<div class="mt-2 font-mono text-xs text-text-muted">recaptured bookings / mo</div>
+</div>
+<!-- Full-width banner -->
+<div class="sm:col-span-2 bg-primary text-white rounded-2xl p-6 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<span class="font-mono text-[11px] uppercase tracking-wider text-slate-300">Staff Capacity Reclaimed</span>
+<div class="font-display text-2xl sm:text-3xl font-extrabold text-white mt-0.5" id="roi-hours">38 Front-Desk Hours / Week</div>
+<p class="text-xs text-slate-300 mt-1">Zero staff overtime to field simple availability checks.</p>
+</div>
+<button class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-secondary text-white font-semibold hover:bg-accent-hover transition-colors text-xs sm:text-sm shrink-0" onclick="openROIReportModal()" type="button">
+                Claim Your ROI
+              </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= 6. INTEGRATIONS & SECURITY RIBBON (#integrations) ================= -->
+<section class="w-full py-16 bg-surface border-b border-surface-border" id="integrations">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="text-center max-w-xl mx-auto mb-8">
+<h3 class="font-display text-xl sm:text-2xl font-bold text-on-surface">Connects Natively to Your Calendar &amp; Practice Software</h3>
+<p class="text-xs sm:text-sm text-text-muted mt-1">Zero migrations. OmniBook operates as an autonomous conversational layer over your tools.</p>
+</div>
+<!-- 8 Clickable Integration Cards -->
+<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-10">
+<button class="bg-surface-card border border-surface-border hover:border-secondary rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-xs transition-all group" onclick="testIntegration('Google Calendar')" type="button">
+<span class="material-symbols-outlined text-[24px] text-secondary group-hover:scale-110 transition-transform mb-1">calendar_month</span>
+<span class="text-xs font-bold text-on-surface">Google Cal</span>
+<span class="font-mono text-[9px] text-status-success">Instant Sync</span>
+</button>
+<button class="bg-surface-card border border-surface-border hover:border-secondary rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-xs transition-all group" onclick="testIntegration('Outlook 365')" type="button">
+<span class="material-symbols-outlined text-[24px] text-secondary group-hover:scale-110 transition-transform mb-1">mail</span>
+<span class="text-xs font-bold text-on-surface">Outlook 365</span>
+<span class="font-mono text-[9px] text-status-success">Instant Sync</span>
+</button>
+<button class="bg-surface-card border border-surface-border hover:border-secondary rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-xs transition-all group" onclick="testIntegration('Mindbody')" type="button">
+<span class="material-symbols-outlined text-[24px] text-secondary group-hover:scale-110 transition-transform mb-1">spa</span>
+<span class="text-xs font-bold text-on-surface">Mindbody</span>
+<span class="font-mono text-[9px] text-status-success">Certified Partner</span>
+</button>
+<button class="bg-surface-card border border-surface-border hover:border-secondary rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-xs transition-all group" onclick="testIntegration('Jane App')" type="button">
+<span class="material-symbols-outlined text-[24px] text-secondary group-hover:scale-110 transition-transform mb-1">medical_services</span>
+<span class="text-xs font-bold text-on-surface">Jane App</span>
+<span class="font-mono text-[9px] text-status-success">Direct API</span>
+</button>
+<button class="bg-surface-card border border-surface-border hover:border-secondary rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-xs transition-all group" onclick="testIntegration('Acuity Scheduling')" type="button">
+<span class="material-symbols-outlined text-[24px] text-secondary group-hover:scale-110 transition-transform mb-1">schedule</span>
+<span class="text-xs font-bold text-on-surface">Acuity</span>
+<span class="font-mono text-[9px] text-status-success">Sub-second</span>
+</button>
+<button class="bg-surface-card border border-surface-border hover:border-secondary rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-xs transition-all group" onclick="testIntegration('Epic EHR')" type="button">
+<span class="material-symbols-outlined text-[24px] text-secondary group-hover:scale-110 transition-transform mb-1">health_and_safety</span>
+<span class="text-xs font-bold text-on-surface">Epic EHR</span>
+<span class="font-mono text-[9px] text-status-success">FHIR Ready</span>
+</button>
+<button class="bg-surface-card border border-surface-border hover:border-secondary rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-xs transition-all group" onclick="testIntegration('Twilio Voice')" type="button">
+<span class="material-symbols-outlined text-[24px] text-secondary group-hover:scale-110 transition-transform mb-1">phone_in_talk</span>
+<span class="text-xs font-bold text-on-surface">Twilio Voice</span>
+<span class="font-mono text-[9px] text-status-success">SIP Native</span>
+</button>
+<button class="bg-surface-card border border-surface-border hover:border-secondary rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-xs transition-all group" onclick="testIntegration('Zapier API')" type="button">
+<span class="material-symbols-outlined text-[24px] text-secondary group-hover:scale-110 transition-transform mb-1">bolt</span>
+<span class="text-xs font-bold text-on-surface">Zapier API</span>
+<span class="font-mono text-[9px] text-status-success">5,000+ Apps</span>
+</button>
+</div>
+<!-- Security Credential Ribbon -->
+<div class="bg-surface-container-low rounded-2xl border border-surface-border p-5 grid grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-status-success/15 text-status-success flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">health_and_safety</span>
+</div>
+<div>
+<div class="text-xs font-bold text-on-surface">HIPAA Compliant</div>
+<div class="font-mono text-[10px] text-text-muted">BAA for Clinical Entities</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+</div>
+<div>
+<div class="text-xs font-bold text-on-surface">SOC2 Type II</div>
+<div class="font-mono text-[10px] text-text-muted">Rigorous Annual Audits</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-channel-web/15 text-channel-web flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<div>
+<div class="text-xs font-bold text-on-surface">End-to-End Encrypted</div>
+<div class="font-mono text-[10px] text-text-muted">TLS 1.3 &amp; AES-256</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+</div>
+<div>
+<div class="text-xs font-bold text-on-surface">99.99% Uptime SLA</div>
+<div class="font-mono text-[10px] text-text-muted">High Availability Cluster</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= 7. PRICING SECTION (#pricing) ================= -->
+<section class="w-full py-16 lg:py-24 bg-surface-container-lowest border-b border-surface-border" id="pricing">
+<div class="max-w-7xl mx-auto px-6 lg:px-12">
+<div class="text-center max-w-2xl mx-auto mb-10">
+<div class="font-mono text-xs uppercase text-secondary font-bold tracking-wider mb-2">Transparent Predictable Plans</div>
+<h2 class="font-display text-2xl sm:text-3xl font-bold text-on-surface">Start Booking More Clients in 5 Minutes</h2>
+<p class="text-sm sm:text-base text-text-muted mt-2">14-day free trial on all plans. No credit card required. Upgrade or cancel anytime.</p>
+<!-- Billing Cycle Toggle -->
+<div class="mt-6 inline-flex items-center p-1 bg-surface-container-low rounded-xl border border-surface-border">
+<button class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-on-surface shadow-xs" id="btn-billing-monthly" onclick="setBillingCycle('monthly')" type="button">
+              Monthly Billing
+            </button>
+<button class="px-4 py-1.5 rounded-lg text-xs font-bold text-text-muted hover:text-on-surface transition-all flex items-center gap-1.5" id="btn-billing-annual" onclick="setBillingCycle('annual')" type="button">
+<span>Annual Billing</span>
+<span class="px-1.5 py-0.5 rounded-full text-[9px] bg-status-success/15 text-status-success font-bold">SAVE 20%</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
+<!-- Starter -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-6 sm:p-7 flex flex-col shadow-xs">
+<div>
+<h3 class="font-display text-lg font-bold text-on-surface">Starter Practice</h3>
+<p class="text-xs text-text-muted mt-1">For solo practitioners and boutique studios.</p>
+<div class="flex items-baseline gap-1 my-4">
+<span class="font-display text-4xl font-extrabold text-on-surface" id="price-starter">$99</span>
+<span class="font-mono text-xs text-text-muted">/ month</span>
+</div>
+</div>
+<ul class="space-y-2.5 text-xs text-text-main my-5 flex-1">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Up to <strong>250 AI bookings</strong> / mo</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Web Widget &amp; Instagram/FB DMs</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Google Calendar &amp; Outlook Sync</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Standard 15-min sanitization buffers</li>
+<li class="flex items-center gap-2 text-text-muted"><span class="material-symbols-outlined text-[17px]">close</span> Inbound Voice Telephony Agent</li>
+</ul>
+<button class="w-full py-2.5 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold text-xs transition-colors" onclick="openOnboardingModal('Starter Practice ($99/mo)')" type="button">
+              Start 14-Day Free Trial
+            </button>
+</div>
+<!-- Pro Clinic (FEATURED) -->
+<div class="bg-surface-card rounded-2xl border-2 border-secondary p-6 sm:p-7 flex flex-col shadow-xl relative">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-secondary text-white font-mono text-[10px] font-bold uppercase tracking-wider shadow-sm">
+              Most Popular
+            </div>
+<div>
+<h3 class="font-display text-lg font-bold text-on-surface">Pro Clinic</h3>
+<p class="text-xs text-text-muted mt-1">For busy clinics, spas, and multi-provider practices.</p>
+<div class="flex items-baseline gap-1 my-4">
+<span class="font-display text-4xl font-extrabold text-on-surface" id="price-pro">$249</span>
+<span class="font-mono text-xs text-text-muted">/ month</span>
+</div>
+</div>
+<ul class="space-y-2.5 text-xs text-text-main my-5 flex-1">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Up to <strong>1,000 AI bookings</strong> / mo</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> <strong>Full Voice Telephony Agent</strong> (P95 &lt; 1.1s)</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Instagram DMs, Messenger &amp; Web</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Mindbody, Jane &amp; Acuity 2-way sync</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Priority Front-Desk Warm Handoff</li>
+</ul>
+<button class="w-full py-2.5 rounded-xl bg-secondary hover:bg-accent-hover text-white font-semibold text-xs shadow-md shadow-secondary/30 transition-all" onclick="openOnboardingModal('Pro Clinic ($249/mo)')" type="button">
+              Start 14-Day Free Trial
+            </button>
+</div>
+<!-- Enterprise -->
+<div class="bg-surface-card rounded-2xl border border-surface-border p-6 sm:p-7 flex flex-col shadow-xs">
+<div>
+<h3 class="font-display text-lg font-bold text-on-surface">Multi-Location Enterprise</h3>
+<p class="text-xs text-text-muted mt-1">For multi-location clinic chains and hospital networks.</p>
+<div class="flex items-baseline gap-1 my-4">
+<span class="font-display text-4xl font-extrabold text-on-surface">Custom</span>
+<span class="font-mono text-xs text-text-muted">/ tailored SLA</span>
+</div>
+</div>
+<ul class="space-y-2.5 text-xs text-text-main my-5 flex-1">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> <strong>Unlimited</strong> AI reservations &amp; call minutes</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Signed <strong>HIPAA BAA Agreement</strong></li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Epic EHR &amp; Cerner Direct Read/Write</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> Dedicated Clinical Account Manager</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-status-success text-[17px]">check</span> 99.99% Uptime Guarantee with SLA</li>
+</ul>
+<button class="w-full py-2.5 rounded-xl bg-primary hover:bg-slate-800 text-white font-semibold text-xs transition-colors" onclick="openOnboardingModal('Multi-Location Enterprise (Sales Contact)')" type="button">
+              Contact Clinical Sales
+            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= 8. FINAL HIGH-IMPACT CALL TO ACTION ================= -->
+<section class="w-full py-14 lg:py-18 bg-primary text-white relative overflow-hidden">
+<div class="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
+<div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-teal-300 font-mono text-xs mb-3">
+<span class="w-2 h-2 rounded-full bg-status-success animate-ping"></span>
+<span>5-MINUTE PLUG-AND-PLAY ONBOARDING</span>
+</div>
+<h2 class="font-display text-2xl sm:text-3xl font-bold max-w-xl">
+            Never Lose Another Appointment to a Busy Signal.
+          </h2>
+<p class="text-sm text-slate-300 mt-2 max-w-lg">
+            Join 1,200+ practices capturing 24/7 high-value bookings across Voice, Meta, Instagram, and Web today.
+          </p>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+<button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-secondary text-white font-semibold hover:bg-accent-hover transition-all shadow-lg shadow-secondary/30" onclick="triggerLiveSimulatorDemo()" type="button">
+<span class="material-symbols-outlined text-[19px]">smart_toy</span>
+<span>Deploy Demo In 60 Seconds</span>
+</button>
+<button class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all font-semibold text-sm" onclick="openOnboardingModal('Technical Walkthrough Request')" type="button">
+            Schedule Tech Walkthrough
+          </button>
+</div>
+</div>
+</section>
+</main>
+<!-- ================= FOOTER ================= -->
+<footer class="w-full bg-surface-container-lowest text-on-surface border-t border-surface-border">
+<div class="max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 pb-8 border-b border-surface-border">
+<div class="lg:col-span-2">
+<div class="flex items-center gap-2 mb-3">
+<div class="w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center font-display font-extrabold text-sm">
+<span class="material-symbols-outlined text-[17px] text-blue-400">calendar_month</span>
+</div>
+<span class="font-display text-base font-bold text-on-surface">OmniBook<span class="text-secondary">.ai</span></span>
+</div>
+<p class="text-xs text-text-muted leading-relaxed max-w-sm mb-4">
+            Autonomous omni-channel conversational AI appointment orchestrator designed for clinics and high-velocity practices. Sub-second zero shadow lock.
+          </p>
+<div class="flex flex-wrap gap-2">
+<span class="font-mono text-[10px] bg-surface-container-low px-2 py-1 rounded text-text-muted">HIPAA Compliant</span>
+<span class="font-mono text-[10px] bg-surface-container-low px-2 py-1 rounded text-text-muted">SOC2 Type II</span>
+<span class="font-mono text-[10px] bg-surface-container-low px-2 py-1 rounded text-text-muted">99.99% SLA</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<h4 class="font-mono text-xs uppercase text-text-muted font-bold">Product</h4>
+<a class="text-xs text-text-muted hover:text-secondary transition-colors" href="#features">Core Scheduling</a>
+<a class="text-xs text-text-muted hover:text-secondary transition-colors" href="#channels">Omni-Channel Voice</a>
+<a class="text-xs text-text-muted hover:text-secondary transition-colors" href="#simulator">Live AI Simulator</a>
+<a class="text-xs text-text-muted hover:text-secondary transition-colors" href="#integrations">EMR &amp; Calendar Sync</a>
+<a class="text-xs text-text-muted hover:text-secondary transition-colors" href="#roi-calculator">ROI Calculator</a>
+</div>
+<div class="flex flex-col gap-2">
+<h4 class="font-mono text-xs uppercase text-text-muted font-bold">Channels</h4>
+<button class="text-xs text-left text-text-muted hover:text-secondary transition-colors" onclick="openChannelDetail('voice')">Telephony &amp; Voice</button>
+<button class="text-xs text-left text-text-muted hover:text-secondary transition-colors" onclick="openChannelDetail('instagram')">Instagram DM</button>
+<button class="text-xs text-left text-text-muted hover:text-secondary transition-colors" onclick="openChannelDetail('messenger')">Messenger Agent</button>
+<button class="text-xs text-left text-text-muted hover:text-secondary transition-colors" onclick="openChannelDetail('web')">Live Web Concierge</button>
+</div>
+<div class="flex flex-col gap-2">
+<h4 class="font-mono text-xs uppercase text-text-muted font-bold">Company</h4>
+<button class="text-xs text-left text-text-muted hover:text-secondary transition-colors" onclick="openOnboardingModal('About OmniBook Information')">About Us</button>
+<a class="text-xs text-text-muted hover:text-secondary transition-colors" href="#pricing">Enterprise Plans</a>
+<button class="text-xs text-left text-text-muted hover:text-secondary transition-colors" onclick="showToast('Security Whitepaper sent to admin cluster', 'info')">Security Whitepaper</button>
+<button class="text-xs text-left text-text-muted hover:text-secondary transition-colors" onclick="showToast('All 4 API clusters operating at 100% health', 'success')">Network Status</button>
+</div>
+<div class="flex flex-col gap-2">
+<h4 class="font-mono text-xs uppercase text-text-muted font-bold">Stay Informed</h4>
+<p class="text-xs text-text-muted">Join 12,000+ practice managers receiving our bi-weekly agent latency report.</p>
+<form class="flex items-center gap-1 mt-1" onsubmit="event.preventDefault(); showToast('Subscribed! Confirmation email sent.', 'success'); this.reset();">
+<input class="bg-surface-container-low text-xs text-on-surface px-2.5 py-1.5 rounded-lg border border-surface-border flex-1 focus:outline-none focus:border-secondary" placeholder="Work email" required="" type="email"/>
+<button class="bg-primary text-white text-xs px-2.5 py-1.5 rounded-lg hover:bg-slate-800 transition-colors" type="submit">Join</button>
+</form>
+</div>
+</div>
+<div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
+<p class="font-mono text-[11px]">© 2025 OmniBook.ai Inc. Precision appointment orchestration engines. All rights reserved.</p>
+<div class="flex items-center gap-4 font-mono text-[11px]">
+<a class="hover:text-on-surface" href="#" onclick="event.preventDefault(); showToast('Privacy Policy: Zero data sold, HIPAA compliant encryption.', 'info');">Privacy Policy</a>
+<a class="hover:text-on-surface" href="#" onclick="event.preventDefault(); showToast('Terms of Service: Standard BAA &amp; 99.99% uptime SLA apply.', 'info');">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- ================= MODALS ================= -->
+<!-- 1. PRE-BOOKING REVIEW MODAL (SPEC 6.1) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs hidden" id="booking-summary-modal" onclick="if(event.target===this)closeBookingModal()">
+<div class="relative w-full max-w-lg bg-surface-card rounded-2xl border border-surface-border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+<div class="flex items-center justify-between px-6 py-4 border-b border-surface-border bg-surface-container-lowest">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-badge-web-bg text-badge-web-text flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div>
+<h3 class="font-display text-sm font-bold text-on-surface">Pre-Booking Summary Review</h3>
+<p class="font-mono text-[10px] text-text-muted">Specification Section 6.1 • Live Parity Validation</p>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-text-muted hover:text-on-surface hover:bg-surface-container transition-all" onclick="closeBookingModal()" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Step: Review -->
+<div class="p-6 space-y-3.5" id="modal-step-review">
+<div class="flex items-center justify-between pb-1">
+<span class="font-mono text-[11px] text-secondary font-bold uppercase tracking-wider">Reservation Details</span>
+<span class="px-2.5 py-0.5 rounded-full font-mono text-[10px] bg-badge-web-bg text-badge-web-text font-bold">READY TO COMMIT</span>
+</div>
+<div class="grid grid-cols-2 gap-2.5 text-xs">
+<div class="p-2.5 bg-surface-container-low rounded-xl">
+<div class="font-mono text-[9px] uppercase text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">location_on</span> Location</div>
+<div class="font-bold text-on-surface mt-0.5">Apex MedSpa</div>
+<div class="font-mono text-[10px] text-text-muted">Downtown Branch</div>
+</div>
+<div class="p-2.5 bg-surface-container-low rounded-xl">
+<div class="font-mono text-[9px] uppercase text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">spa</span> Service</div>
+<div class="font-bold text-on-surface mt-0.5">Deep Tissue Massage</div>
+<div class="font-mono text-[10px] text-text-muted">60 Minutes Session</div>
+</div>
+<div class="p-2.5 bg-surface-container-low rounded-xl">
+<div class="font-mono text-[9px] uppercase text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">person</span> Practitioner</div>
+<div class="font-bold text-on-surface mt-0.5">Sarah Jenkins, LMT</div>
+<div class="font-mono text-[10px] text-status-success font-semibold">Requested Provider</div>
+</div>
+<div class="p-2.5 bg-surface-container-low rounded-xl">
+<div class="font-mono text-[9px] uppercase text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">event</span> Date &amp; Time</div>
+<div class="font-bold text-on-surface mt-0.5">Thu, Oct 24</div>
+<div class="font-mono text-[10px] text-secondary font-bold">2:30 PM EST</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2.5 text-xs">
+<div class="p-2.5 bg-surface-container-low rounded-xl">
+<div class="font-mono text-[9px] uppercase text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">badge</span> Client</div>
+<div class="font-bold text-on-surface mt-0.5">Jane Doe</div>
+<div class="font-mono text-[10px] text-text-muted">+1 555-019-2831</div>
+</div>
+<div class="p-2.5 bg-surface-container-low rounded-xl">
+<div class="font-mono text-[9px] uppercase text-text-muted flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">payments</span> Total Price</div>
+<div class="font-extrabold text-secondary text-sm mt-0.5">$145.00</div>
+<div class="font-mono text-[10px] text-text-muted">Pay at Business</div>
+</div>
+</div>
+<div class="bg-amber-50 text-amber-900 border border-status-warning/40 rounded-xl p-2.5 text-xs flex items-start gap-2">
+<span class="material-symbols-outlined text-status-warning text-[17px] shrink-0">info</span>
+<div><strong class="font-semibold">24h Cancellation Window:</strong> Free rescheduling or cancel up to 24h prior without cancellation fee.</div>
+</div>
+<div class="pt-2 flex items-center gap-2">
+<button class="flex-1 py-2.5 px-3 rounded-lg bg-surface-container-low text-on-surface text-xs font-semibold hover:bg-surface-container transition-colors" onclick="closeBookingModal()" type="button">
+            Modify Details
+          </button>
+<button class="flex-1 py-2.5 px-3 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover transition-colors shadow-sm flex items-center justify-center gap-1.5" onclick="confirmBookingFromModal()" type="button">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>Confirm &amp; Book Slot</span>
+</button>
+</div>
+</div>
+<!-- Step: Confirmed -->
+<div class="p-6 text-center space-y-3.5 hidden" id="modal-step-confirmed">
+<div class="w-14 h-14 rounded-full bg-status-success/15 text-status-success mx-auto flex items-center justify-center">
+<span class="material-symbols-outlined text-[32px]">task_alt</span>
+</div>
+<h4 class="font-display text-lg font-bold text-on-surface">Appointment Confirmed &amp; Locked!</h4>
+<p class="text-xs text-text-muted max-w-sm mx-auto">
+          Bi-directionally committed into Google Calendar &amp; Mindbody with sub-second lock. SMS confirmation sent to Jane Doe.
+        </p>
+<div class="bg-surface-container-low rounded-xl p-3 text-left font-mono text-[10px] space-y-1.5 border border-surface-border">
+<div class="flex justify-between"><span class="text-text-muted">Token:</span><span class="font-bold text-on-surface">#8841-B</span></div>
+<div class="flex justify-between"><span class="text-text-muted">Provider:</span><span class="font-bold text-on-surface">Sarah Jenkins (Room 3)</span></div>
+<div class="flex justify-between"><span class="text-text-muted">Schedule:</span><span class="font-bold text-secondary">Thu, Oct 24 @ 2:30 PM EST</span></div>
+<div class="flex justify-between"><span class="text-text-muted">Sync Latency:</span><span class="font-bold text-status-success">24ms (Zero Collisions)</span></div>
+</div>
+<div class="pt-2 flex items-center gap-2">
+<button class="flex-1 py-2 px-3 rounded-lg bg-surface-container text-on-surface text-xs font-semibold hover:bg-surface-container-high transition-colors" onclick="resetBookingModal()" type="button">
+            Review Again
+          </button>
+<button class="flex-1 py-2 px-3 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover transition-colors" onclick="closeBookingModal()" type="button">
+            Done
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. SIGN IN MODAL -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs hidden" id="signin-modal" onclick="if(event.target===this)closeSignInModal()">
+<div class="relative w-full max-w-md bg-surface-card rounded-2xl border border-surface-border shadow-2xl p-6">
+<div class="flex items-center justify-between pb-3 border-b border-surface-border">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">lock</span>
+<h3 class="font-display text-base font-bold text-on-surface">Sign In to OmniBook</h3>
+</div>
+<button class="text-text-muted hover:text-on-surface" onclick="closeSignInModal()" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button>
+</div>
+<form class="mt-4 space-y-3" onsubmit="handleSignInSubmit(event)">
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1">Clinic Work Email</label>
+<input class="w-full bg-surface-container-low border border-surface-border rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary" placeholder="admin@apexmedspa.com" required="" type="email"/>
+</div>
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1">Password</label>
+<input class="w-full bg-surface-container-low border border-surface-border rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary" placeholder="••••••••••••" required="" type="password"/>
+</div>
+<div class="flex items-center justify-between text-xs text-text-muted pt-1">
+<label class="flex items-center gap-1.5 cursor-pointer">
+<input checked="" class="rounded border-surface-border text-secondary focus:ring-0" type="checkbox"/>
+<span>Remember terminal</span>
+</label>
+<a class="text-secondary hover:underline" href="#" onclick="event.preventDefault(); showToast('Password reset link sent.', 'info')">Forgot password?</a>
+</div>
+<button class="w-full py-2.5 rounded-xl bg-secondary text-white text-xs font-semibold hover:bg-accent-hover transition-colors shadow-sm" type="submit">
+          Authenticate Session
+        </button>
+</form>
+</div>
+</div>
+<!-- 3. ONBOARDING & DEMO MODAL -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs hidden" id="onboarding-modal" onclick="if(event.target===this)closeOnboardingModal()">
+<div class="relative w-full max-w-lg bg-surface-card rounded-2xl border border-surface-border shadow-2xl p-6">
+<div class="flex items-center justify-between pb-3 border-b border-surface-border">
+<div>
+<h3 class="font-display text-base font-bold text-on-surface" id="onboarding-title">Start 14-Day Free Practice Trial</h3>
+<p class="font-mono text-[10px] text-text-muted">Instant bi-directional setup • No credit card required</p>
+</div>
+<button class="text-text-muted hover:text-on-surface" onclick="closeOnboardingModal()" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button>
+</div>
+<form class="mt-4 space-y-3" onsubmit="handleOnboardingSubmit(event)">
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1">Full Name</label>
+<input class="w-full bg-surface-container-low border border-surface-border rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary" placeholder="Dr. Alex Rivera" required="" type="text"/>
+</div>
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1">Practice / Clinic Name</label>
+<input class="w-full bg-surface-container-low border border-surface-border rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary" placeholder="Rivera Aesthetics" required="" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1">Work Email</label>
+<input class="w-full bg-surface-container-low border border-surface-border rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary" placeholder="alex@riveraaesthetics.com" required="" type="email"/>
+</div>
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1">Primary Scheduler</label>
+<select class="w-full bg-surface-container-low border border-surface-border rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary">
+<option>Mindbody</option>
+<option>Google Calendar</option>
+<option>Outlook 365</option>
+<option>Jane App</option>
+<option>Acuity</option>
+<option>Epic EHR / Cerner</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-on-surface mb-1">Practice Phone Number (For Voice Agent Test)</label>
+<input class="w-full bg-surface-container-low border border-surface-border rounded-lg px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary" placeholder="+1 (555) 234-5678" required="" type="tel"/>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container-low text-xs text-text-muted flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[16px]">bolt</span>
+<span>We will provision a sandbox number and connect your calendar in under 60 seconds.</span>
+</div>
+<button class="w-full py-2.5 rounded-xl bg-secondary text-white text-xs font-semibold hover:bg-accent-hover transition-colors shadow-sm" type="submit">
+          Activate Agent Sandbox
+        </button>
+</form>
+</div>
+</div>
+<!-- 4. CHANNEL DETAIL MODAL -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs hidden" id="channel-modal" onclick="if(event.target===this)closeChannelDetail()">
+<div class="relative w-full max-w-md bg-surface-card rounded-2xl border border-surface-border shadow-2xl p-6">
+<div class="flex items-center justify-between pb-3 border-b border-surface-border">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-secondary/15 text-secondary flex items-center justify-center font-bold" id="chan-modal-icon">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+</div>
+<div>
+<h3 class="font-display text-base font-bold text-on-surface" id="chan-modal-title">Channel Configuration</h3>
+<span class="font-mono text-[10px] text-secondary font-bold" id="chan-modal-tag">READY TO DEPLOY</span>
+</div>
+</div>
+<button class="text-text-muted hover:text-on-surface" onclick="closeChannelDetail()" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button>
+</div>
+<div class="py-4 space-y-3">
+<p class="text-xs text-text-muted leading-relaxed" id="chan-modal-desc">Channel description text.</p>
+<div class="bg-surface-container-low p-3 rounded-xl border border-surface-border text-xs space-y-2">
+<div class="flex justify-between font-mono text-[11px]"><span class="text-text-muted">Response Latency:</span><span class="font-bold text-on-surface" id="chan-modal-lat">&lt; 300ms</span></div>
+<div class="flex justify-between font-mono text-[11px]"><span class="text-text-muted">Protocol:</span><span class="font-bold text-on-surface" id="chan-modal-proto">Webhooks / API</span></div>
+<div class="flex justify-between font-mono text-[11px]"><span class="text-text-muted">Turnover Buffers:</span><span class="font-bold text-status-success">Auto-computed</span></div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2 rounded-lg bg-surface-container text-xs font-semibold text-on-surface hover:bg-surface-container-high transition-colors" onclick="closeChannelDetail()" type="button">Close</button>
+<button class="flex-1 py-2 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover transition-colors" onclick="testActiveChannelFromModal()" type="button">Test In Simulator</button>
+</div>
+</div>
+</div>
+<!-- 5. ROI DETAILED REPORT MODAL -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs hidden" id="roi-report-modal" onclick="if(event.target===this)closeROIReportModal()">
+<div class="relative w-full max-w-lg bg-surface-card rounded-2xl border border-surface-border shadow-2xl p-6">
+<div class="flex items-center justify-between pb-3 border-b border-surface-border">
+<div>
+<h3 class="font-display text-base font-bold text-on-surface">Custom Practice ROI Executive Brief</h3>
+<p class="font-mono text-[10px] text-text-muted">Generated via OmniBook Algorithmic Recovery Model</p>
+</div>
+<button class="text-text-muted hover:text-on-surface" onclick="closeROIReportModal()" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button>
+</div>
+<div class="py-4 space-y-3">
+<div class="grid grid-cols-3 gap-2 text-center">
+<div class="p-3 bg-surface-container-low rounded-xl">
+<div class="font-mono text-[9px] uppercase text-text-muted">Bookings Rescued</div>
+<div class="font-display text-xl font-extrabold text-secondary mt-1" id="rep-bookings">+84 / mo</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded-xl">
+<div class="font-mono text-[9px] uppercase text-text-muted">Revenue Lift</div>
+<div class="font-display text-xl font-extrabold text-status-success mt-1" id="rep-revenue">+$10,080</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded-xl">
+<div class="font-mono text-[9px] uppercase text-text-muted">Desk Hours Saved</div>
+<div class="font-display text-xl font-extrabold text-on-surface mt-1" id="rep-hours">38 hrs / wk</div>
+</div>
+</div>
+<div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 leading-relaxed">
+<strong>Executive Takeaway:</strong> With OmniBook active 24/7 across Phone &amp; DMs, your practice recaptures an average of 16.8% in previously missed appointment revenue while reducing staff scheduling burden by over 150 hours every month.
+        </div>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex-1 py-2.5 rounded-lg bg-surface-container text-xs font-semibold text-on-surface hover:bg-surface-container-high transition-colors" onclick="closeROIReportModal()" type="button">Dismiss</button>
+<button class="flex-1 py-2.5 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover transition-colors shadow-sm" onclick="closeROIReportModal(); openOnboardingModal('Claim Practice ROI Plan');" type="button">
+          Claim Plan with 14-Day Free Trial
+        </button>
+</div>
+</div>
+</div>
+<!-- ================= JAVASCRIPT LOGIC ================= -->
+<script>
+    // Global active state
+    let currentChannel = 'ig';
+    let currentBilling = 'monthly';
+    let isSlotCommitted = false;
+
+    // 1. Toast Notification Utility
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      const icon = document.getElementById('toast-icon');
+
+      text.innerText = message;
+      if (type === 'success') {
+        icon.innerText = 'check_circle';
+        icon.className = 'material-symbols-outlined text-[20px] text-status-success';
+      } else if (type === 'info') {
+        icon.innerText = 'info';
+        icon.className = 'material-symbols-outlined text-[20px] text-secondary';
+      } else {
+        icon.innerText = 'notifications';
+        icon.className = 'material-symbols-outlined text-[20px] text-status-warning';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 3400);
+    }
+
+    // 2. Channel Switching
+    function switchChannel(channel) {
+      currentChannel = channel;
+      const avatar = document.getElementById('channel-avatar');
+      const title = document.getElementById('channel-header-title');
+      const latency = document.getElementById('channel-latency');
+      const sourceLabel = document.getElementById('slot-source-label');
+      const tabs = ['ig', 'messenger', 'web', 'voice'];
+
+      tabs.forEach(t => {
+        const btn = document.getElementById('tab-' + t);
+        if (btn) {
+          btn.className = 'px-3 py-1.5 rounded-md font-mono text-xs transition-all flex items-center gap-1.5 text-text-muted hover:text-on-surface';
+        }
+      });
+
+      const activeBtn = document.getElementById('tab-' + channel);
+
+      if (channel === 'ig') {
+        activeBtn.className = 'px-3 py-1.5 rounded-md font-mono text-xs transition-all flex items-center gap-1.5 bg-badge-instagram-bg text-badge-instagram-text font-bold shadow-xs';
+        avatar.className = 'w-8 h-8 rounded-full bg-badge-instagram-bg text-badge-instagram-text flex items-center justify-center shrink-0';
+        avatar.innerHTML = '<span class="material-symbols-outlined text-[18px]">photo_camera</span>';
+        title.innerText = 'OmniBook Wellness Clinic (@omnicare_la)';
+        latency.innerText = 'Latency: 280ms';
+        sourceLabel.innerText = 'Instagram Direct';
+        logEvent('CHANNEL_SWITCH_INSTAGRAM_GRAPH_V20', 'READY');
+      } else if (channel === 'messenger') {
+        activeBtn.className = 'px-3 py-1.5 rounded-md font-mono text-xs transition-all flex items-center gap-1.5 bg-badge-messenger-bg text-badge-messenger-text font-bold shadow-xs';
+        avatar.className = 'w-8 h-8 rounded-full bg-badge-messenger-bg text-badge-messenger-text flex items-center justify-center shrink-0';
+        avatar.innerHTML = '<span class="material-symbols-outlined text-[18px]">chat</span>';
+        title.innerText = 'OmniBook Facebook Page Concierge';
+        latency.innerText = 'Latency: 195ms';
+        sourceLabel.innerText = 'Meta Messenger';
+        logEvent('CHANNEL_SWITCH_FB_MESSENGER_WEBHOOK', 'READY');
+      } else if (channel === 'web') {
+        activeBtn.className = 'px-3 py-1.5 rounded-md font-mono text-xs transition-all flex items-center gap-1.5 bg-badge-web-bg text-badge-web-text font-bold shadow-xs';
+        avatar.className = 'w-8 h-8 rounded-full bg-badge-web-bg text-badge-web-text flex items-center justify-center shrink-0';
+        avatar.innerHTML = '<span class="material-symbols-outlined text-[18px]">web</span>';
+        title.innerText = 'Live Website Receptionist Widget';
+        latency.innerText = 'Latency: 64ms';
+        sourceLabel.innerText = 'Web Chat Embed';
+        logEvent('CHANNEL_SWITCH_CLIENT_WEBSOCKET', '64ms OK');
+      } else if (channel === 'voice') {
+        activeBtn.className = 'px-3 py-1.5 rounded-md font-mono text-xs transition-all flex items-center gap-1.5 bg-badge-voice-bg text-badge-voice-text font-bold shadow-xs';
+        avatar.className = 'w-8 h-8 rounded-full bg-badge-voice-bg text-badge-voice-text flex items-center justify-center shrink-0';
+        avatar.innerHTML = '<span class="material-symbols-outlined text-[18px]">phone_in_talk</span>';
+        title.innerText = 'Inbound Phone Line (+1 888-555-OMNI)';
+        latency.innerText = 'Voice P95: 980ms';
+        sourceLabel.innerText = 'Twilio Voice Trunk';
+        logEvent('CHANNEL_SWITCH_SIP_MEDIA_STREAM', 'AUDIO READY');
+      }
+    }
+
+    // Append to live simulation event log
+    function logEvent(eventCode, status) {
+      const container = document.getElementById('event-log-container');
+      if (!container) return;
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      const div = document.createElement('div');
+      div.className = 'flex items-center justify-between text-secondary font-medium';
+      div.innerHTML = `<span>[${timeStr}] ${eventCode}</span><span>${status}</span>`;
+      container.prepend(div);
+    }
+
+    // 3. Simulation Chat Handler
+    function handleSendSimulationMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('sim-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chat = document.getElementById('chat-messages');
+
+      // Add user message
+      const userDiv = document.createElement('div');
+      userDiv.className = 'flex items-start gap-2.5 justify-end';
+      userDiv.innerHTML = `
+        <div class="bg-secondary text-white rounded-2xl rounded-tr-xs px-4 py-2 max-w-[85%] shadow-xs">
+          <p class="text-xs sm:text-sm">${escapeHTML(text)}</p>
+          <div class="text-[10px] text-blue-200 font-mono text-right mt-1">Just now • Delivered</div>
+        </div>
+        <div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center text-xs font-bold text-on-surface">JD</div>
+      `;
+      chat.appendChild(userDiv);
+      input.value = '';
+      chat.scrollTop = chat.scrollHeight;
+
+      logEvent('INBOUND_USER_QUERY_PARSED', 'INTENT_EXTRACTED');
+
+      // AI Simulated Response
+      setTimeout(() => {
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'flex items-start gap-2.5';
+        let reply = "I've checked the live calendar for Sarah! All buffers are verified. Would you like me to hold or adjust that time?";
+        if (text.toLowerCase().includes('friday')) {
+          reply = "Sarah has 10:00 AM and 1:30 PM open this Friday. Shall I reserve the 10:00 AM slot for you?";
+        } else if (text.toLowerCase().includes('cancel') || text.toLowerCase().includes('reschedule')) {
+          reply = "Under our 24h flexible policy, you can reschedule or cancel at zero fee. What new day works best?";
+        }
+        aiDiv.innerHTML = `
+          <div class="w-7 h-7 rounded-full bg-secondary text-white flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[15px]">smart_toy</span>
+          </div>
+          <div class="bg-surface-container-low text-on-surface rounded-2xl rounded-tl-xs px-4 py-2.5 max-w-[85%] border border-surface-border">
+            <p class="text-xs sm:text-sm">${reply}</p>
+            <div class="text-[10px] text-text-muted font-mono mt-1">Instant AI Orchestration • Mindbody Sync</div>
+          </div>
+        `;
+        chat.appendChild(aiDiv);
+        chat.scrollTop = chat.scrollHeight;
+        logEvent('SYNCHRONIZED_AI_DISPATCH_SENT', '200 OK');
+      }, 600);
+    }
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    // In-chat slot button confirm
+    function confirmInChatSlot() {
+      const badge = document.getElementById('slot-status-badge');
+      const btn = document.getElementById('inchat-book-btn');
+      const lockLabel = document.getElementById('slot-lock-label');
+      const syncPill = document.getElementById('sync-state-pill');
+
+      isSlotCommitted = true;
+      if (badge) {
+        badge.innerText = 'COMMITTED TO CALENDAR';
+        badge.className = 'px-2 py-0.5 rounded-full font-mono text-[9px] bg-status-success/15 text-status-success font-bold uppercase';
+      }
+      if (btn) {
+        btn.innerText = 'Slot Committed ✓';
+        btn.className = 'flex-1 py-1.5 px-2 rounded-lg bg-status-success text-white text-xs font-semibold cursor-default';
+        btn.disabled = true;
+      }
+      if (lockLabel) {
+        lockLabel.innerText = 'CALENDAR COMMITTED';
+        lockLabel.className = 'px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-status-success text-white';
+      }
+      if (syncPill) {
+        syncPill.innerText = 'ZERO SHADOW LOCK (24ms)';
+      }
+      logEvent('ATOMIC_MUTEX_LOCK_COMMITTED', 'SLOT_LOCKED_#8841-B');
+      showToast('Appointment atomically locked into Mindbody & Google Calendar!', 'success');
+    }
+
+    function triggerLiveSimulatorDemo() {
+      const sim = document.getElementById('simulator');
+      if (sim) {
+        sim.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      switchChannel('web');
+      showToast('Simulation initiated! Interactive Web & Calendar engine ready.', 'info');
+      setTimeout(() => {
+        const input = document.getElementById('sim-input');
+        if (input) {
+          input.value = 'Can I book Sarah for Thursday at 2:30 PM?';
+          input.focus();
+        }
+      }, 600);
+    }
+
+    // 4. Interactive ROI Calculator Logic
+    function updateROI() {
+      const calls = parseInt(document.getElementById('calls-slider').value, 10);
+      const ticket = parseInt(document.getElementById('ticket-slider').value, 10);
+
+      document.getElementById('calls-display').innerText = calls.toLocaleString() + ' calls';
+      document.getElementById('ticket-display').innerText = '$' + ticket.toLocaleString();
+
+      // 16.8% benchmark recovery rate
+      const rescued = Math.round(calls * 0.168);
+      const revenue = rescued * ticket;
+      // ~4.5 mins saved per missed call/intake negotiation
+      const hoursSaved = Math.round((calls * 4.5) / 60);
+
+      document.getElementById('roi-bookings').innerText = '+' + rescued;
+      document.getElementById('roi-revenue').innerText = '+$' + revenue.toLocaleString();
+      document.getElementById('roi-hours').innerText = hoursSaved + ' Front-Desk Hours / Week';
+
+      // Update values in report modal if open
+      const repB = document.getElementById('rep-bookings');
+      const repR = document.getElementById('rep-revenue');
+      const repH = document.getElementById('rep-hours');
+      if (repB) repB.innerText = '+' + rescued + ' / mo';
+      if (repR) repR.innerText = '+$' + revenue.toLocaleString();
+      if (repH) repH.innerText = hoursSaved + ' hrs / wk';
+    }
+
+    // 5. Billing Cycle Toggle (-20% Annual)
+    function setBillingCycle(cycle) {
+      currentBilling = cycle;
+      const btnM = document.getElementById('btn-billing-monthly');
+      const btnA = document.getElementById('btn-billing-annual');
+      const priceStarter = document.getElementById('price-starter');
+      const pricePro = document.getElementById('price-pro');
+
+      if (cycle === 'monthly') {
+        btnM.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-on-surface shadow-xs';
+        btnA.className = 'px-4 py-1.5 rounded-lg text-xs font-bold text-text-muted hover:text-on-surface transition-all flex items-center gap-1.5';
+        priceStarter.innerText = '$99';
+        pricePro.innerText = '$249';
+        showToast('Switched to monthly pricing.', 'info');
+      } else {
+        btnA.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-on-surface shadow-xs flex items-center gap-1.5';
+        btnM.className = 'px-4 py-1.5 rounded-lg text-xs font-bold text-text-muted hover:text-on-surface transition-all';
+        priceStarter.innerText = '$79';
+        pricePro.innerText = '$199';
+        showToast('Annual discount (20% OFF) applied!', 'success');
+      }
+    }
+
+    // 6. Test Integrations Click
+    function testIntegration(name) {
+      logEvent('INTEGRATION_PROBE_' + name.toUpperCase().replace(/\s+/g, '_'), 'HEALTHY (18ms)');
+      showToast(`${name} 2-Way Sync active: Latency verified under 25ms.`, 'success');
+    }
+
+    // 7. Modals: Pre-Booking Summary (Spec 6.1)
+    function openBookingModal() {
+      const modal = document.getElementById('booking-summary-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+    function closeBookingModal() {
+      const modal = document.getElementById('booking-summary-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+    function confirmBookingFromModal() {
+      const rev = document.getElementById('modal-step-review');
+      const conf = document.getElementById('modal-step-confirmed');
+      if (rev && conf) {
+        rev.classList.add('hidden');
+        conf.classList.remove('hidden');
+      }
+      confirmInChatSlot();
+    }
+    function resetBookingModal() {
+      const rev = document.getElementById('modal-step-review');
+      const conf = document.getElementById('modal-step-confirmed');
+      if (rev && conf) {
+        conf.classList.add('hidden');
+        rev.classList.remove('hidden');
+      }
+    }
+
+    // 8. Modals: Sign In
+    function openSignInModal() {
+      const modal = document.getElementById('signin-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+    function closeSignInModal() {
+      const modal = document.getElementById('signin-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+    function handleSignInSubmit(e) {
+      e.preventDefault();
+      closeSignInModal();
+      showToast('Authenticated! Welcome back to OmniBook Practice Console.', 'success');
+    }
+
+    // 9. Modals: Onboarding / Trial / Demo
+    function openOnboardingModal(titleText = 'Start 14-Day Free Practice Trial') {
+      const title = document.getElementById('onboarding-title');
+      if (title && titleText) title.innerText = titleText;
+      const modal = document.getElementById('onboarding-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+    function closeOnboardingModal() {
+      const modal = document.getElementById('onboarding-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+    function handleOnboardingSubmit(e) {
+      e.preventDefault();
+      closeOnboardingModal();
+      showToast('Sandbox provisioned! Your demo line is ready to take test calls.', 'success');
+    }
+
+    // 10. Modals: ROI Detailed Report
+    function openROIReportModal() {
+      updateROI();
+      const modal = document.getElementById('roi-report-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+    function closeROIReportModal() {
+      const modal = document.getElementById('roi-report-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // 11. Modals: Channel Capabilities
+    const channelData = {
+      voice: {
+        title: 'Ultra-Low Latency Telephony',
+        icon: 'phone_in_talk',
+        tag: 'P95 < 1.1s LATENCY',
+        desc: 'Direct SIP trunking into your practice main phone line. Understands medical terminology, dates, accents, and provider preferences with real human turn-taking and automatic barge-in silence.',
+        lat: '< 980ms P95',
+        proto: 'Twilio Voice / WebRTC SIP'
+      },
+      messenger: {
+        title: 'Meta Page Concierge',
+        icon: 'chat',
+        tag: 'INSTANT AUTO-REPLY',
+        desc: 'Connects directly to your clinic Facebook page. Converts ad clicks and direct messages into confirmed calendar reservations in under 3 messages with native carousel time pickers.',
+        lat: '195ms Webhook',
+        proto: 'Meta Graph API v20'
+      },
+      instagram: {
+        title: 'Instagram DM Agent',
+        icon: 'photo_camera',
+        tag: 'BIO & STORY INBOUND',
+        desc: 'Transforms comments, story reactions, and profile DMs into instant booked sessions without losing high-intent prospective patients.',
+        lat: '280ms Direct',
+        proto: 'Instagram Graph API'
+      },
+      web: {
+        title: 'Embeddable Web Concierge',
+        icon: 'web',
+        tag: '1-CLICK BOOKING SHEET',
+        desc: 'Under 8kb embed script. Drops onto Webflow, WordPress, Shopify, or custom Next.js sites with zero Cumulative Layout Shift (CLS) and bi-directional calendar lock.',
+        lat: '64ms WebSocket',
+        proto: 'WSS / TLS 1.3 Encrypted'
+      }
+    };
+
+    let selectedChannelKey = 'voice';
+
+    function openChannelDetail(key) {
+      selectedChannelKey = key;
+      const data = channelData[key] || channelData.voice;
+      document.getElementById('chan-modal-title').innerText = data.title;
+      document.getElementById('chan-modal-tag').innerText = data.tag;
+      document.getElementById('chan-modal-desc').innerText = data.desc;
+      document.getElementById('chan-modal-lat').innerText = data.lat;
+      document.getElementById('chan-modal-proto').innerText = data.proto;
+      document.getElementById('chan-modal-icon').innerHTML = `<span class="material-symbols-outlined text-[18px]">${data.icon}</span>`;
+
+      const modal = document.getElementById('channel-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeChannelDetail() {
+      const modal = document.getElementById('channel-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function testActiveChannelFromModal() {
+      closeChannelDetail();
+      switchChannel(selectedChannelKey === 'instagram' ? 'ig' : selectedChannelKey);
+      const sim = document.getElementById('simulator');
+      if (sim) sim.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      showToast(`Switched Simulator to ${channelData[selectedChannelKey].title}!`, 'info');
+    }
+
+    // 12. Global Keyboard & Escape Listeners
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeBookingModal();
+        closeSignInModal();
+        closeOnboardingModal();
+        closeChannelDetail();
+        closeROIReportModal();
+      }
+    });
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      updateROI();
+    });
+  </script>
+</body></html>

@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0f172a;
+  --color-secondary: #0051d5;
+  --color-accent-hover: #1d4ed8;
+  --color-surface: #f8f9ff;
+  --color-surface-card: #ffffff;
+  --color-surface-border: #e2e8f0;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container-high: #dce9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #0b1c30;
+  --color-text-main: #1e293b;
+  --color-text-muted: #64748b;
+  --color-channel-web: #0d9488;
+  --color-channel-voice: #7c3aed;
+  --color-channel-messenger: #0084ff;
+  --color-channel-instagram: #e1306c;
+  --color-channel-whatsapp: #16a34a;
+  --color-badge-web-bg: #f0fdfa;
+  --color-badge-web-text: #0f766e;
+  --color-badge-voice-bg: #f5f3ff;
+  --color-badge-voice-text: #6d28d9;
+  --color-badge-messenger-bg: #eff6ff;
+  --color-badge-messenger-text: #1d4ed8;
+  --color-badge-instagram-bg: #fdf2f8;
+  --color-badge-instagram-text: #be185d;
+  --color-badge-whatsapp-bg: #dcfce7;
+  --color-badge-whatsapp-text: #15803d;
+  --color-status-success: #16a34a;
+  --color-status-warning: #f59e0b;
+  --color-status-danger: #dc2626;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    overscroll-behavior: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+}
