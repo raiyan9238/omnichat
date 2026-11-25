@@ -22,6 +22,7 @@ import {
   INITIAL_EVENTS,
   INITIAL_MESSAGES,
 } from './data/omnibookData';
+import { INITIAL_WORKSPACES } from './data/workspaceData';
 import {
   BookingDetails,
   ChannelDetailInfo,
@@ -31,6 +32,27 @@ import {
   ToastState,
   ToastType,
 } from './types/omnibook';
+import {
+  WorkspaceRole,
+  WorkspaceSection,
+  WorkspaceTenant,
+} from './types/workspace';
+import { WorkspaceShell } from './components/workspace/WorkspaceShell';
+import { DashboardView } from './components/workspace/DashboardView';
+import { AgentsView } from './components/workspace/AgentsView';
+import { PhoneNumbersView } from './components/workspace/PhoneNumbersView';
+import { CallLogsView } from './components/workspace/CallLogsView';
+import { ConversationsView } from './components/workspace/ConversationsView';
+import { CrmView } from './components/workspace/CrmView';
+import { FeedbackView } from './components/workspace/FeedbackView';
+import { AnalyticsView } from './components/workspace/AnalyticsView';
+import { TeamView } from './components/workspace/TeamView';
+import { MarketingHubView } from './components/workspace/MarketingHubView';
+import {
+  ApiKeysView,
+  BillingView,
+  SettingsView,
+} from './components/workspace/AccountViews';
 
 function getCurrentTimeStamp(): string {
   return new Date().toTimeString().split(' ')[0];
@@ -58,6 +80,15 @@ export default function App() {
   const [onboardingTitle, setOnboardingTitle] = useState('Start 14-Day Free Practice Trial');
   const [activeChannelModal, setActiveChannelModal] = useState<ChannelDetailInfo['key'] | null>(null);
   const [roiModalOpen, setRoiModalOpen] = useState(false);
+
+  // Multi-Tenant SaaS Workspace State
+  const [viewMode, setViewMode] = useState<'landing' | 'workspace'>('landing');
+  const [workspaces, setWorkspaces] = useState<WorkspaceTenant[]>(INITIAL_WORKSPACES);
+  const [activeWorkspaceId, setActiveWorkspaceId] = useState<string>(INITIAL_WORKSPACES[0].id);
+  const [activeSection, setActiveSection] = useState<WorkspaceSection>('dashboard');
+  const [activeRole, setActiveRole] = useState<WorkspaceRole>('Owner');
+  const [inspectedCallId, setInspectedCallId] = useState<string | null>(null);
+  const [inspectedCustomerId, setInspectedCustomerId] = useState<string | null>(null);
 
   // Toast state
   const [toast, setToast] = useState<ToastState>({
@@ -281,6 +312,165 @@ export default function App() {
     setOnboardingOpen(true);
   }, []);
 
+  const activeWorkspace =
+    workspaces.find((w) => w.id === activeWorkspaceId) ?? workspaces[0];
+
+  const handleUpdateActiveWorkspace = useCallback(
+    (updater: (prev: WorkspaceTenant) => WorkspaceTenant) => {
+      setWorkspaces((prevList) =>
+        prevList.map((ws) => (ws.id === activeWorkspace.id ? updater(ws) : ws))
+      );
+    },
+    [activeWorkspace.id]
+  );
+
+  const handleSelectWorkspace = useCallback(
+    (workspaceId: string) => {
+      setActiveWorkspaceId(workspaceId);
+      setInspectedCallId(null);
+      setInspectedCustomerId(null);
+      const next = workspaces.find((w) => w.id === workspaceId);
+      if (next) {
+        showToast(`Switched workspace to ${next.name}.`, 'info');
+      }
+    },
+    [showToast, workspaces]
+  );
+
+  const handleInspectCall = useCallback((callId: string) => {
+    setInspectedCallId(callId);
+    setActiveSection('call-logs');
+  }, []);
+
+  const handleInspectCustomer = useCallback((customerId: string) => {
+    setInspectedCustomerId(customerId);
+    setActiveSection('crm');
+  }, []);
+
+  if (viewMode === 'workspace') {
+    return (
+      <>
+        <Toast toast={toast} />
+        <WorkspaceShell
+          workspaces={workspaces}
+          activeWorkspace={activeWorkspace}
+          activeSection={activeSection}
+          activeRole={activeRole}
+          onSelectWorkspace={handleSelectWorkspace}
+          onSelectSection={(sec) => {
+            setActiveSection(sec);
+            if (sec !== 'call-logs') setInspectedCallId(null);
+            if (sec !== 'crm') setInspectedCustomerId(null);
+          }}
+          onSelectRole={setActiveRole}
+          onExitToLanding={() => setViewMode('landing')}
+        >
+          <div key={activeWorkspace.id}>
+            {activeSection === 'dashboard' && (
+              <DashboardView
+                workspace={activeWorkspace}
+                activeRole={activeRole}
+                onNavigate={setActiveSection}
+                onInspectCall={handleInspectCall}
+                onInspectCustomer={handleInspectCustomer}
+              />
+            )}
+            {activeSection === 'agents' && (
+              <AgentsView
+                workspace={activeWorkspace}
+                onUpdateWorkspace={handleUpdateActiveWorkspace}
+                onShowToast={showToast}
+              />
+            )}
+            {activeSection === 'numbers' && (
+              <PhoneNumbersView
+                workspace={activeWorkspace}
+                onUpdateWorkspace={handleUpdateActiveWorkspace}
+                onShowToast={showToast}
+              />
+            )}
+            {activeSection === 'call-logs' && (
+              <CallLogsView
+                workspace={activeWorkspace}
+                selectedCallId={inspectedCallId}
+                onSelectCall={setInspectedCallId}
+                onOpenCustomer={handleInspectCustomer}
+              />
+            )}
+            {activeSection === 'conversations' && (
+              <ConversationsView
+                workspace={activeWorkspace}
+                onUpdateWorkspace={handleUpdateActiveWorkspace}
+                onOpenCustomer={handleInspectCustomer}
+                onShowToast={showToast}
+              />
+            )}
+            {activeSection === 'crm' && (
+              <CrmView
+                workspace={activeWorkspace}
+                selectedCustomerId={inspectedCustomerId}
+                onSelectCustomer={setInspectedCustomerId}
+                onInspectCall={handleInspectCall}
+                onUpdateWorkspace={handleUpdateActiveWorkspace}
+                onShowToast={showToast}
+              />
+            )}
+            {activeSection === 'feedback' && (
+              <FeedbackView
+                workspace={activeWorkspace}
+                onInspectCall={handleInspectCall}
+                onInspectCustomer={handleInspectCustomer}
+              />
+            )}
+            {activeSection === 'analytics' && (
+              <AnalyticsView
+                workspace={activeWorkspace}
+                onShowToast={showToast}
+              />
+            )}
+            {activeSection === 'team' && (
+              <TeamView
+                workspace={activeWorkspace}
+                activeRole={activeRole}
+                onSelectRole={setActiveRole}
+                onUpdateWorkspace={handleUpdateActiveWorkspace}
+                onShowToast={showToast}
+              />
+            )}
+            {activeSection === 'marketing' && (
+              <MarketingHubView
+                workspace={activeWorkspace}
+                onUpdateWorkspace={handleUpdateActiveWorkspace}
+                onShowToast={showToast}
+              />
+            )}
+            {activeSection === 'api-keys' && (
+              <ApiKeysView
+                workspace={activeWorkspace}
+                onUpdateWorkspace={handleUpdateActiveWorkspace}
+                onShowToast={showToast}
+              />
+            )}
+            {activeSection === 'billing' && (
+              <BillingView
+                workspace={activeWorkspace}
+                onUpdateWorkspace={handleUpdateActiveWorkspace}
+                onShowToast={showToast}
+              />
+            )}
+            {activeSection === 'settings' && (
+              <SettingsView
+                workspace={activeWorkspace}
+                onUpdateWorkspace={handleUpdateActiveWorkspace}
+                onShowToast={showToast}
+              />
+            )}
+          </div>
+        </WorkspaceShell>
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-surface text-on-surface">
       <Toast toast={toast} />
@@ -289,6 +479,10 @@ export default function App() {
         onShowToast={showToast}
         onOpenSignIn={() => setSignInOpen(true)}
         onOpenOnboarding={handleOpenOnboarding}
+        onOpenWorkspace={() => {
+          setViewMode('workspace');
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }}
       />
 
       <main className="w-full pt-16 min-h-screen">
@@ -365,6 +559,10 @@ export default function App() {
         open={signInOpen}
         onClose={() => setSignInOpen(false)}
         onShowToast={showToast}
+        onAuthenticated={() => {
+          setViewMode('workspace');
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }}
       />
 
       <OnboardingModal

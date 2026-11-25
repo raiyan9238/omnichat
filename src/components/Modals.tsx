@@ -386,9 +386,10 @@ interface SignInModalProps {
   open: boolean;
   onClose: () => void;
   onShowToast: (msg: string, type?: ToastType) => void;
+  onAuthenticated?: () => void;
 }
 
-export function SignInModal({ open, onClose, onShowToast }: SignInModalProps) {
+export function SignInModal({ open, onClose, onShowToast, onAuthenticated }: SignInModalProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(true);
@@ -400,7 +401,8 @@ export function SignInModal({ open, onClose, onShowToast }: SignInModalProps) {
     if (!email.trim() || !password.trim()) return;
     setPassword('');
     onClose();
-    onShowToast('Authenticated! Welcome back to OmniBook Practice Console.', 'success');
+    onShowToast('Authenticated! Opening your Omnichat Workspace Console.', 'success');
+    onAuthenticated?.();
   }
 
   return (

@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Calendar, Menu, X } from 'lucide-react';
+import { Calendar, LayoutDashboard, Menu, X } from 'lucide-react';
 import { ToastType } from '../types/omnibook';
 
 interface NavbarProps {
   onShowToast: (message: string, type?: ToastType) => void;
   onOpenSignIn: () => void;
   onOpenOnboarding: (title: string) => void;
+  onOpenWorkspace: () => void;
 }
 
 const NAV_LINKS = [
@@ -17,7 +18,7 @@ const NAV_LINKS = [
   { href: '#book-appointment', label: 'Book Appointment' },
 ];
 
-export function Navbar({ onShowToast, onOpenSignIn, onOpenOnboarding }: NavbarProps) {
+export function Navbar({ onShowToast, onOpenSignIn, onOpenOnboarding, onOpenWorkspace }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -58,6 +59,14 @@ export function Navbar({ onShowToast, onOpenSignIn, onOpenOnboarding }: NavbarPr
 
         {/* Action CTAs */}
         <div className="flex items-center gap-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={onOpenWorkspace}
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-surface-border bg-surface text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-all whitespace-nowrap shrink-0 cursor-pointer"
+          >
+            <LayoutDashboard className="w-3.5 h-3.5 text-secondary" />
+            <span>Workspace</span>
+          </button>
           <button
             type="button"
             onClick={onOpenSignIn}
@@ -111,21 +120,21 @@ export function Navbar({ onShowToast, onOpenSignIn, onOpenOnboarding }: NavbarPr
               type="button"
               onClick={() => {
                 setMobileMenuOpen(false);
-                onOpenSignIn();
+                onOpenWorkspace();
               }}
-              className="flex-1 py-2 px-3 rounded-lg border border-surface-border text-sm font-medium text-on-surface hover:bg-surface-container-low"
+              className="flex-1 py-2 px-3 rounded-lg bg-secondary text-white text-sm font-semibold"
             >
-              Sign In
+              Workspace
             </button>
             <button
               type="button"
               onClick={() => {
                 setMobileMenuOpen(false);
-                onOpenOnboarding('Book Practice Setup Call');
+                onOpenSignIn();
               }}
-              className="flex-1 py-2 px-3 rounded-lg bg-surface-container-high text-sm font-semibold text-on-surface"
+              className="flex-1 py-2 px-3 rounded-lg border border-surface-border text-sm font-medium text-on-surface hover:bg-surface-container-low"
             >
-              Book Demo
+              Sign In
             </button>
           </div>
         </div>
