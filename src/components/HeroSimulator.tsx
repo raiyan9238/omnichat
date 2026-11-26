@@ -201,7 +201,7 @@ export function HeroSimulator({
                     {channelMeta.headerTitle}
                   </div>
                   <div className="font-mono text-[11px] text-status-success flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse motion-reduce:animate-none" />
                     <span className="truncate">Active AI Orchestrator • Instant Sync</span>
                   </div>
                 </div>

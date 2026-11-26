@@ -97,20 +97,21 @@ export function AnalyticsView({ workspace, onShowToast }: AnalyticsViewProps) {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold text-on-surface tracking-tight">
+          <h1 className="font-display text-2xl font-bold text-on-surface tracking-tight text-balance">
             Communication &amp; Business Analytics
           </h1>
-          <p className="text-xs text-text-muted mt-1">
+          <p className="text-xs text-text-muted mt-1 text-pretty">
             Deep performance breakdown across AI receptionist handling, channel conversion, and business growth.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-lg border border-surface-border bg-surface-card p-0.5">
+          <div className="inline-flex rounded-lg border border-surface-border bg-surface-card p-0.5" role="group" aria-label="Analytics period">
             {(['weekly', 'monthly', 'yearly'] as PeriodKey[]).map((p) => (
               <button
                 key={p}
                 type="button"
+                aria-pressed={period === p}
                 onClick={() => setPeriod(p)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold capitalize cursor-pointer ${
                   period === p
@@ -124,6 +125,7 @@ export function AnalyticsView({ workspace, onShowToast }: AnalyticsViewProps) {
           </div>
 
           <select
+            aria-label="Filter analytics by channel"
             value={channelScope}
             onChange={(e) => setChannelScope(e.target.value)}
             className="rounded-lg border border-surface-border bg-surface-card px-3 py-1.5 text-xs font-semibold text-on-surface"
@@ -246,11 +248,11 @@ export function AnalyticsView({ workspace, onShowToast }: AnalyticsViewProps) {
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-surface-border text-text-muted font-mono text-[11px] uppercase">
-                  <th className="py-2.5 pr-3">AI Agent</th>
-                  <th className="py-2.5 px-3">Calls</th>
-                  <th className="py-2.5 px-3">AI Resolution</th>
-                  <th className="py-2.5 px-3">Avg Handle</th>
-                  <th className="py-2.5 pl-3 text-right">CSAT</th>
+                  <th scope="col" className="py-2.5 pr-3">AI Agent</th>
+                  <th scope="col" className="py-2.5 px-3">Calls</th>
+                  <th scope="col" className="py-2.5 px-3">AI Resolution</th>
+                  <th scope="col" className="py-2.5 px-3">Avg Handle</th>
+                  <th scope="col" className="py-2.5 pl-3 text-right">CSAT</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-border">

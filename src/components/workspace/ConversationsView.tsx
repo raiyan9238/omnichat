@@ -1,5 +1,6 @@
 import { FormEvent, useState } from 'react';
 import {
+  ArrowLeft,
   MessageSquare,
   Search,
   Send,
@@ -36,6 +37,7 @@ export function ConversationsView({
   const [selectedThreadId, setSelectedThreadId] = useState<string>(
     workspace.conversations[0]?.id ?? ''
   );
+  const [mobilePane, setMobilePane] = useState<'list' | 'thread'>('list');
   const [replyText, setReplyText] = useState('');
 
   const filteredThreads = workspace.conversations.filter((t) => {
@@ -58,6 +60,7 @@ export function ConversationsView({
 
   function selectThread(id: string) {
     setSelectedThreadId(id);
+    setMobilePane('thread');
     onUpdateWorkspace((prev) => ({
       ...prev,
       conversations: prev.conversations.map((c) =>
@@ -123,12 +126,17 @@ export function ConversationsView({
 
       <div className="bg-surface-card border border-surface-border rounded-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[540px]">
         {/* Left Thread List */}
-        <div className="lg:col-span-4 border-b lg:border-b-0 lg:border-r border-surface-border flex flex-col">
+        <div
+          className={`lg:col-span-4 border-b lg:border-b-0 lg:border-r border-surface-border flex-col ${
+            mobilePane === 'thread' ? 'hidden lg:flex' : 'flex'
+          }`}
+        >
           <div className="p-3.5 border-b border-surface-border space-y-2.5">
             <div className="relative">
-              <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
               <input
                 type="text"
+                aria-label="Search conversations"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search customer or handle..."
@@ -214,10 +222,14 @@ export function ConversationsView({
         </div>
 
         {/* Right Active Thread */}
-        <div className="lg:col-span-8 flex flex-col">
+        <div
+          className={`lg:col-span-8 flex-col ${
+            mobilePane === 'list' ? 'hidden lg:flex' : 'flex'
+          }`}
+        >
           {!activeThread ? (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-2">
-              <MessageSquare className="w-8 h-8 text-text-muted" />
+              <MessageSquare className="w-8 h-8 text-text-muted" aria-hidden="true" />
               <p className="text-sm font-semibold text-on-surface">
                 Select a conversation thread
               </p>
@@ -225,24 +237,35 @@ export function ConversationsView({
           ) : (
             <>
               <div className="px-5 py-3.5 border-b border-surface-border flex flex-wrap items-center justify-between gap-3 bg-surface/50">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-display text-sm font-bold text-on-surface">
-                      {activeThread.customerName}
-                    </h2>
-                    <span
-                      className={`px-2 py-0.5 rounded font-mono text-[10px] font-semibold ${CHANNEL_BADGE[activeThread.channel]}`}
-                    >
-                      {activeThread.channel}
-                    </span>
-                  </div>
-                  <div className="font-mono text-[11px] text-text-muted">
-                    {activeThread.handle} · Assigned: {activeThread.agentName}
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => setMobilePane('list')}
+                    aria-label="Back to thread list"
+                    className="lg:hidden inline-flex items-center justify-center w-8 h-8 rounded-lg border border-surface-border bg-surface-card text-on-surface hover:bg-surface-container-low cursor-pointer shrink-0"
+                  >
+                    <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+                  </button>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h2 className="font-display text-sm font-bold text-on-surface truncate">
+                        {activeThread.customerName}
+                      </h2>
+                      <span
+                        className={`px-2 py-0.5 rounded font-mono text-[10px] font-semibold shrink-0 ${CHANNEL_BADGE[activeThread.channel]}`}
+                      >
+                        {activeThread.channel}
+                      </span>
+                    </div>
+                    <div className="font-mono text-[11px] text-text-muted truncate">
+                      {activeThread.handle} · Assigned: {activeThread.agentName}
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <select
+                    aria-label="Conversation status"
                     value={activeThread.status}
                     onChange={(e) =>
                       handleStatusChange(

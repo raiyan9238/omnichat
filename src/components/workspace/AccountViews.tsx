@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { ToastType } from '../../types/omnibook';
 import { ApiKeyItem, WorkspaceTenant } from '../../types/workspace';
+import { WorkspaceDialog } from './WorkspaceDialog';
 
 interface AccountViewProps {
   workspace: WorkspaceTenant;
@@ -159,13 +160,13 @@ export function ApiKeysView({
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="border-b border-surface-border bg-surface text-text-muted font-mono text-[11px] uppercase">
-                <th className="py-3 px-4 font-semibold">Label</th>
-                <th className="py-3 px-4 font-semibold">Token (Demo)</th>
-                <th className="py-3 px-4 font-semibold">Created</th>
-                <th className="py-3 px-4 font-semibold">Last Used</th>
-                <th className="py-3 px-4 font-semibold">30d Requests</th>
-                <th className="py-3 px-4 font-semibold">Status</th>
-                <th className="py-3 px-4 font-semibold text-right">Actions</th>
+                <th scope="col" className="py-3 px-4 font-semibold">Label</th>
+                <th scope="col" className="py-3 px-4 font-semibold">Token (Demo)</th>
+                <th scope="col" className="py-3 px-4 font-semibold">Created</th>
+                <th scope="col" className="py-3 px-4 font-semibold">Last Used</th>
+                <th scope="col" className="py-3 px-4 font-semibold">30d Requests</th>
+                <th scope="col" className="py-3 px-4 font-semibold">Status</th>
+                <th scope="col" className="py-3 px-4 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-border">
@@ -204,31 +205,34 @@ export function ApiKeysView({
                         <button
                           type="button"
                           onClick={() => toggleReveal(k.id)}
+                          aria-label={revealed ? `Hide key ${k.label}` : `Show key ${k.label}`}
                           title={revealed ? 'Hide key' : 'Show key'}
                           className="p-1.5 rounded border border-surface-border text-text-muted hover:text-on-surface cursor-pointer"
                         >
                           {revealed ? (
-                            <EyeOff className="w-3.5 h-3.5" />
+                            <EyeOff className="w-3.5 h-3.5" aria-hidden="true" />
                           ) : (
-                            <Eye className="w-3.5 h-3.5" />
+                            <Eye className="w-3.5 h-3.5" aria-hidden="true" />
                           )}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleCopy(k)}
+                          aria-label={`Copy demo key ${k.label}`}
                           title="Copy demo key"
                           className="p-1.5 rounded border border-surface-border text-text-muted hover:text-secondary cursor-pointer"
                         >
-                          <Copy className="w-3.5 h-3.5" />
+                          <Copy className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
                         {k.status === 'Active' && (
                           <button
                             type="button"
                             onClick={() => setRevokeTarget(k)}
+                            aria-label={`Revoke key ${k.label}`}
                             title="Revoke key"
                             className="p-1.5 rounded border border-surface-border text-text-muted hover:text-status-danger cursor-pointer"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                           </button>
                         )}
                       </div>
@@ -242,107 +246,79 @@ export function ApiKeysView({
       </div>
 
       {/* Generate Key Modal */}
-      {createOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setCreateOpen(false);
-          }}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="w-full max-w-md bg-surface-card border border-surface-border rounded-2xl shadow-xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-border">
-              <div className="flex items-center gap-2">
-                <KeyRound className="w-4 h-4 text-secondary" />
-                <h3 className="font-display text-base font-bold text-on-surface">
-                  Generate Workspace Demo Key
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setCreateOpen(false)}
-                className="text-text-muted hover:text-on-surface cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleGenerateKey} className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-on-surface mb-1">
-                  Key Label
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={keyLabel}
-                  onChange={(e) => setKeyLabel(e.target.value)}
-                  placeholder="e.g., Mindbody Calendar Bridge"
-                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                />
-              </div>
-              <p className="text-[11px] text-text-muted">
-                Generates a non-functional mock token prefixed with <span className="font-mono">omni_demo_</span> for prototype demonstration.
-              </p>
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setCreateOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover cursor-pointer"
-                >
-                  Generate Key
-                </button>
-              </div>
-            </form>
+      <WorkspaceDialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        title="Generate Workspace Demo Key"
+        icon={<KeyRound className="w-4 h-4 text-secondary" />}
+      >
+        <form onSubmit={handleGenerateKey} className="space-y-3 text-xs">
+          <div>
+            <label htmlFor="api-key-label" className="block font-semibold text-on-surface mb-1">
+              Key Label
+            </label>
+            <input
+              id="api-key-label"
+              type="text"
+              required
+              value={keyLabel}
+              onChange={(e) => setKeyLabel(e.target.value)}
+              placeholder="e.g., Mindbody Calendar Bridge"
+              className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+            />
           </div>
-        </div>
-      )}
+          <p className="text-[11px] text-text-muted text-pretty">
+            Generates a non-functional mock token prefixed with <span className="font-mono">omni_demo_</span> for prototype demonstration.
+          </p>
+          <div className="pt-2 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setCreateOpen(false)}
+              className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover cursor-pointer"
+            >
+              Generate Key
+            </button>
+          </div>
+        </form>
+      </WorkspaceDialog>
 
-      {/* Revoke Confirmation Modal */}
-      {revokeTarget && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setRevokeTarget(null);
-          }}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="w-full max-w-sm bg-surface-card border border-surface-border rounded-2xl shadow-xl p-6 space-y-4">
-            <div className="flex items-center gap-2 text-status-danger">
-              <ShieldAlert className="w-5 h-5" />
-              <h3 className="font-display text-base font-bold text-on-surface">
-                Revoke Demo API Key?
-              </h3>
-            </div>
-            <p className="text-xs text-text-muted leading-relaxed">
-              Revoking <span className="font-semibold text-on-surface">{revokeTarget.label}</span> immediately marks this token inactive in the workspace.
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setRevokeTarget(null)}
-                className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold cursor-pointer"
-              >
-                Keep Active
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmRevoke}
-                className="px-4 py-2 rounded-lg bg-status-danger text-white text-xs font-semibold cursor-pointer"
-              >
-                Revoke Key
-              </button>
-            </div>
-          </div>
+      {/* Revoke Confirmation AlertDialog */}
+      <WorkspaceDialog
+        open={!!revokeTarget}
+        onClose={() => setRevokeTarget(null)}
+        role="alertdialog"
+        maxWidthClass="max-w-sm"
+        title="Revoke Demo API Key?"
+        icon={<ShieldAlert className="w-5 h-5 text-status-danger" />}
+        description={
+          revokeTarget
+            ? `Revoking ${revokeTarget.label} immediately marks this token inactive in the workspace.`
+            : undefined
+        }
+      >
+        <div className="flex justify-end gap-2 pt-1">
+          <button
+            type="button"
+            onClick={() => setRevokeTarget(null)}
+            className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold cursor-pointer"
+          >
+            Keep Active
+          </button>
+          <button
+            type="button"
+            onClick={handleConfirmRevoke}
+            className="px-4 py-2 rounded-lg bg-status-danger text-white text-xs font-semibold cursor-pointer"
+          >
+            Revoke Key
+          </button>
         </div>
-      )}
+      </WorkspaceDialog>
     </div>
   );
 }

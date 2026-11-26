@@ -472,7 +472,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface">
+    <div className="min-h-dvh bg-surface text-on-surface">
       <Toast toast={toast} />
 
       <Navbar
@@ -485,7 +485,7 @@ export default function App() {
         }}
       />
 
-      <main className="w-full pt-16 min-h-screen">
+      <main className="w-full pt-16 min-h-dvh">
         <HeroSimulator
           currentChannel={currentChannel}
           messages={messagesByChannel[currentChannel]}

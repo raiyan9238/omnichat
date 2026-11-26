@@ -42,13 +42,17 @@ export function DualBarTrendChart({
             </span>
           )}
         </div>
-        {hoveredIdx !== null && data[hoveredIdx] && (
+        {hoveredIdx !== null && data[hoveredIdx] ? (
           <span className="font-mono text-[11px] font-semibold text-on-surface tabular-nums">
             {data[hoveredIdx].label}: {data[hoveredIdx].primary.toLocaleString()}
             {unitSuffix}
             {secondaryLabel && data[hoveredIdx].secondary !== undefined
               ? ` · ${data[hoveredIdx].secondary!.toLocaleString()} ${secondaryLabel.toLowerCase()}`
               : ''}
+          </span>
+        ) : (
+          <span className="font-mono text-[10px] text-text-muted tabular-nums">
+            Peak: {maxVal.toLocaleString()}{unitSuffix}
           </span>
         )}
       </div>
@@ -73,16 +77,25 @@ export function DualBarTrendChart({
               : 0;
           const primaryPct = 100 - secondaryPct;
           const isHovered = hoveredIdx === idx;
+          const barLabel = `${point.label}: ${point.primary.toLocaleString()} ${primaryLabel}${
+            secondaryLabel && point.secondary !== undefined
+              ? `, ${point.secondary.toLocaleString()} ${secondaryLabel}`
+              : ''
+          }`;
 
           return (
-            <div
+            <button
               key={point.label}
+              type="button"
+              aria-label={barLabel}
               onMouseEnter={() => setHoveredIdx(idx)}
               onMouseLeave={() => setHoveredIdx(null)}
-              className="relative flex-1 h-full flex flex-col justify-end items-center group cursor-pointer"
+              onFocus={() => setHoveredIdx(idx)}
+              onBlur={() => setHoveredIdx(null)}
+              className="relative flex-1 h-full flex flex-col justify-end items-center group cursor-pointer focus:outline-none"
             >
               <div
-                className={`w-full max-w-[34px] rounded-t-md overflow-hidden flex flex-col justify-end transition-all duration-150 ${
+                className={`w-full max-w-[34px] rounded-t-md overflow-hidden flex flex-col justify-end transition-[filter,box-shadow] duration-150 ease-out group-focus-visible:ring-2 group-focus-visible:ring-secondary ${
                   isHovered ? 'ring-2 ring-secondary/30 brightness-95' : ''
                 }`}
                 style={{ height: `${totalPct}%` }}
@@ -98,7 +111,7 @@ export function DualBarTrendChart({
                   style={{ height: `${primaryPct}%` }}
                 />
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -227,9 +240,14 @@ export function SparkAreaTrendChart({
         {coords.map((pt, idx) => (
           <g
             key={pt.label}
+            tabIndex={0}
+            role="button"
+            aria-label={`${pt.label}: ${pt.value.toLocaleString()}${valueSuffix}`}
             onMouseEnter={() => setHoveredIdx(idx)}
             onMouseLeave={() => setHoveredIdx(null)}
-            className="cursor-pointer"
+            onFocus={() => setHoveredIdx(idx)}
+            onBlur={() => setHoveredIdx(null)}
+            className="cursor-pointer focus:outline-none"
           >
             <circle cx={pt.x} cy={pt.y} r="14" fill="transparent" />
             <circle
@@ -284,14 +302,18 @@ export function HourlyDistributionChart({ data }: { data: HourlyPoint[] }) {
           const pct = Math.max(8, Math.round((item.calls / maxVal) * 100));
           const isPeak = item.calls >= maxVal * 0.85;
           return (
-            <div
+            <button
               key={item.hour}
+              type="button"
+              aria-label={`${item.hour}: ${item.calls} calls`}
               onMouseEnter={() => setHovered(idx)}
               onMouseLeave={() => setHovered(null)}
-              className="flex-1 h-full flex items-end cursor-pointer"
+              onFocus={() => setHovered(idx)}
+              onBlur={() => setHovered(null)}
+              className="flex-1 h-full flex items-end cursor-pointer focus:outline-none group"
             >
               <div
-                className={`w-full rounded-t-sm transition-all ${
+                className={`w-full rounded-t-sm transition-colors duration-150 group-focus-visible:ring-2 group-focus-visible:ring-secondary ${
                   hovered === idx
                     ? 'bg-secondary'
                     : isPeak
@@ -300,7 +322,7 @@ export function HourlyDistributionChart({ data }: { data: HourlyPoint[] }) {
                 }`}
                 style={{ height: `${pct}%` }}
               />
-            </div>
+            </button>
           );
         })}
       </div>

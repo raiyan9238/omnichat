@@ -11,7 +11,6 @@ import {
   PowerOff,
   Save,
   Sparkles,
-  X,
 } from 'lucide-react';
 import { ToastType } from '../../types/omnibook';
 import {
@@ -19,6 +18,7 @@ import {
   AIAgent,
   WorkspaceTenant,
 } from '../../types/workspace';
+import { WorkspaceDialog } from './WorkspaceDialog';
 
 interface AgentsViewProps {
   workspace: WorkspaceTenant;
@@ -601,115 +601,99 @@ export function AgentsView({
       )}
 
       {/* Create AI Agent Modal */}
-      {createOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setCreateOpen(false);
-          }}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="w-full max-w-lg bg-surface-card border border-surface-border rounded-2xl shadow-xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-border">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-secondary" />
-                <h3 className="font-display text-base font-bold text-on-surface">
-                  Create AI Receptionist Agent
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setCreateOpen(false)}
-                className="text-text-muted hover:text-on-surface cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateAgent} className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-on-surface mb-1">
-                  Agent Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="e.g., Chloe — Insurance & Intake Desk"
-                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">
-                    Role Title
-                  </label>
-                  <input
-                    type="text"
-                    value={newRoleTitle}
-                    onChange={(e) => setNewRoleTitle(e.target.value)}
-                    className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">
-                    Language
-                  </label>
-                  <input
-                    type="text"
-                    value={newLanguage}
-                    onChange={(e) => setNewLanguage(e.target.value)}
-                    className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block font-semibold text-on-surface mb-1">
-                  Voice Model
-                </label>
-                <select
-                  value={newVoiceModel}
-                  onChange={(e) => setNewVoiceModel(e.target.value)}
-                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
-                >
-                  <option>Neural Clarity v3 (Warm)</option>
-                  <option>Neural Studio (Calm)</option>
-                  <option>Conversational Crisp</option>
-                </select>
-              </div>
-              <div>
-                <label className="block font-semibold text-on-surface mb-1">
-                  Initial Greeting Script
-                </label>
-                <textarea
-                  rows={3}
-                  value={newGreeting}
-                  onChange={(e) => setNewGreeting(e.target.value)}
-                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
-                />
-              </div>
-              <div className="pt-2 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setCreateOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold text-on-surface hover:bg-surface-container-low cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover cursor-pointer"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Provision Agent</span>
-                </button>
-              </div>
-            </form>
+      <WorkspaceDialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        maxWidthClass="max-w-lg"
+        title="Create AI Receptionist Agent"
+        icon={<Sparkles className="w-4 h-4 text-secondary" />}
+      >
+        <form onSubmit={handleCreateAgent} className="space-y-3 text-xs">
+          <div>
+            <label htmlFor="agent-new-name" className="block font-semibold text-on-surface mb-1">
+              Agent Name
+            </label>
+            <input
+              id="agent-new-name"
+              type="text"
+              required
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="e.g., Chloe — Insurance & Intake Desk"
+              className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
+            />
           </div>
-        </div>
-      )}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="agent-new-role" className="block font-semibold text-on-surface mb-1">
+                Role Title
+              </label>
+              <input
+                id="agent-new-role"
+                type="text"
+                value={newRoleTitle}
+                onChange={(e) => setNewRoleTitle(e.target.value)}
+                className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
+              />
+            </div>
+            <div>
+              <label htmlFor="agent-new-lang" className="block font-semibold text-on-surface mb-1">
+                Language
+              </label>
+              <input
+                id="agent-new-lang"
+                type="text"
+                value={newLanguage}
+                onChange={(e) => setNewLanguage(e.target.value)}
+                className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="agent-new-voice" className="block font-semibold text-on-surface mb-1">
+              Voice Model
+            </label>
+            <select
+              id="agent-new-voice"
+              value={newVoiceModel}
+              onChange={(e) => setNewVoiceModel(e.target.value)}
+              className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
+            >
+              <option>Neural Clarity v3 (Warm)</option>
+              <option>Neural Studio (Calm)</option>
+              <option>Conversational Crisp</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="agent-new-greeting" className="block font-semibold text-on-surface mb-1">
+              Initial Greeting Script
+            </label>
+            <textarea
+              id="agent-new-greeting"
+              rows={3}
+              value={newGreeting}
+              onChange={(e) => setNewGreeting(e.target.value)}
+              className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-secondary"
+            />
+          </div>
+          <div className="pt-2 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setCreateOpen(false)}
+              className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold text-on-surface hover:bg-surface-container-low cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover cursor-pointer"
+            >
+              <Check className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Provision Agent</span>
+            </button>
+          </div>
+        </form>
+      </WorkspaceDialog>
     </div>
   );
 }

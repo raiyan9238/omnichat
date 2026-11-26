@@ -39,7 +39,7 @@ export function Navbar({ onShowToast, onOpenSignIn, onOpenOnboarding, onOpenWork
             onClick={() => onShowToast('Cluster Health: 99.99% | All 5 Omni-Channel Pipes (incl. WhatsApp) Online', 'info')}
             className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-badge-web-bg text-badge-web-text font-mono text-[11px] font-semibold hover:bg-teal-100 transition-colors cursor-pointer border border-channel-web/20 whitespace-nowrap shrink-0"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-channel-web animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-channel-web animate-pulse motion-reduce:animate-none" />
             <span>LIVE ORCHESTRATION</span>
           </button>
         </div>
@@ -62,29 +62,29 @@ export function Navbar({ onShowToast, onOpenSignIn, onOpenOnboarding, onOpenWork
           <button
             type="button"
             onClick={onOpenWorkspace}
-            className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-surface-border bg-surface text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-all whitespace-nowrap shrink-0 cursor-pointer"
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-surface-border bg-surface text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
-            <LayoutDashboard className="w-3.5 h-3.5 text-secondary" />
+            <LayoutDashboard className="w-3.5 h-3.5 text-secondary" aria-hidden="true" />
             <span>Workspace</span>
           </button>
           <button
             type="button"
             onClick={onOpenSignIn}
-            className="hidden md:inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-on-surface hover:bg-surface-container-low transition-all whitespace-nowrap shrink-0 cursor-pointer"
+            className="hidden md:inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-on-surface hover:bg-surface-container-low transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
             Sign In
           </button>
           <button
             type="button"
             onClick={() => onOpenOnboarding('Book Practice Setup Call')}
-            className="hidden sm:inline-flex items-center px-3.5 py-2 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container text-sm font-semibold transition-all whitespace-nowrap shrink-0 cursor-pointer"
+            className="hidden sm:inline-flex items-center px-3.5 py-2 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container text-sm font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
             Book Demo
           </button>
           <button
             type="button"
             onClick={() => onOpenOnboarding('14-Day Free Practice Trial')}
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-secondary text-white hover:bg-accent-hover text-sm font-semibold shadow-sm shadow-secondary/30 transition-all whitespace-nowrap shrink-0 cursor-pointer"
+            className="inline-flex items-center px-4 py-2 rounded-lg bg-secondary text-white hover:bg-accent-hover text-sm font-semibold shadow-sm shadow-secondary/30 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
             Start 14-Day Free Trial
           </button>

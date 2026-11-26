@@ -6,7 +6,6 @@ import {
   Shield,
   Trash2,
   UserPlus,
-  X,
 } from 'lucide-react';
 import { ROLE_PERMISSIONS } from '../../data/workspaceData';
 import { ToastType } from '../../types/omnibook';
@@ -15,6 +14,7 @@ import {
   WorkspaceRole,
   WorkspaceTenant,
 } from '../../types/workspace';
+import { WorkspaceDialog } from './WorkspaceDialog';
 
 interface TeamViewProps {
   workspace: WorkspaceTenant;
@@ -301,106 +301,88 @@ export function TeamView({
       </div>
 
       {/* Invite Member Modal */}
-      {inviteOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setInviteOpen(false);
-          }}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="w-full max-w-md bg-surface-card border border-surface-border rounded-2xl shadow-xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-border">
-              <div className="flex items-center gap-2">
-                <MailPlus className="w-4 h-4 text-secondary" />
-                <h3 className="font-display text-base font-bold text-on-surface">
-                  Invite Team Member
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setInviteOpen(false)}
-                className="text-text-muted hover:text-on-surface cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleInvite} className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-on-surface mb-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={inviteName}
-                  onChange={(e) => setInviteName(e.target.value)}
-                  placeholder="Alex Morgan"
-                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                />
-              </div>
-              <div>
-                <label className="block font-semibold text-on-surface mb-1">
-                  Work Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  placeholder="alex@clinic.demo"
-                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">
-                    Access Role
-                  </label>
-                  <select
-                    value={inviteRole}
-                    onChange={(e) => setInviteRole(e.target.value as WorkspaceRole)}
-                    className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                  >
-                    <option value="Admin">Admin</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Member">Member</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">
-                    Department
-                  </label>
-                  <input
-                    type="text"
-                    value={inviteDept}
-                    onChange={(e) => setInviteDept(e.target.value)}
-                    className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                  />
-                </div>
-              </div>
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setInviteOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold text-on-surface cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover cursor-pointer"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  <span>Send Invite</span>
-                </button>
-              </div>
-            </form>
+      <WorkspaceDialog
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+        title="Invite Team Member"
+        icon={<MailPlus className="w-4 h-4 text-secondary" />}
+      >
+        <form onSubmit={handleInvite} className="space-y-3 text-xs">
+          <div>
+            <label htmlFor="team-invite-name" className="block font-semibold text-on-surface mb-1">
+              Full Name
+            </label>
+            <input
+              id="team-invite-name"
+              type="text"
+              required
+              value={inviteName}
+              onChange={(e) => setInviteName(e.target.value)}
+              placeholder="Alex Morgan"
+              className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+            />
           </div>
-        </div>
-      )}
+          <div>
+            <label htmlFor="team-invite-email" className="block font-semibold text-on-surface mb-1">
+              Work Email
+            </label>
+            <input
+              id="team-invite-email"
+              type="email"
+              required
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              placeholder="alex@clinic.demo"
+              className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="team-invite-role" className="block font-semibold text-on-surface mb-1">
+                Access Role
+              </label>
+              <select
+                id="team-invite-role"
+                value={inviteRole}
+                onChange={(e) => setInviteRole(e.target.value as WorkspaceRole)}
+                className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+              >
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="Member">Member</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="team-invite-dept" className="block font-semibold text-on-surface mb-1">
+                Department
+              </label>
+              <input
+                id="team-invite-dept"
+                type="text"
+                value={inviteDept}
+                onChange={(e) => setInviteDept(e.target.value)}
+                className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+              />
+            </div>
+          </div>
+          <div className="pt-2 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setInviteOpen(false)}
+              className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold text-on-surface cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover cursor-pointer"
+            >
+              <Check className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Send Invite</span>
+            </button>
+          </div>
+        </form>
+      </WorkspaceDialog>
     </div>
   );
 }

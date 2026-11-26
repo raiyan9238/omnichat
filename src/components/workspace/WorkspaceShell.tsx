@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import {
   BarChart3,
   Bot,
@@ -129,6 +129,18 @@ export function WorkspaceShell({
   const isSectionAllowed = allowedSections.includes(activeSection);
   const unreadConversations = activeWorkspace.conversations.filter((c) => c.unread).length;
 
+  useEffect(() => {
+    if (!mobileOpen && !wsDropdownOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setMobileOpen(false);
+        setWsDropdownOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [mobileOpen, wsDropdownOpen]);
+
   function handleNavClick(section: WorkspaceSection) {
     onSelectSection(section);
     setMobileOpen(false);
@@ -207,6 +219,7 @@ export function WorkspaceShell({
                       key={item.id}
                       type="button"
                       onClick={() => handleNavClick(item.id)}
+                      aria-current={isActive ? 'page' : undefined}
                       title={compact ? item.label : undefined}
                       className={`w-full flex items-center ${
                         compact ? 'justify-center px-2' : 'justify-between px-2.5'
@@ -217,7 +230,7 @@ export function WorkspaceShell({
                       }`}
                     >
                       <span className="flex items-center gap-2.5 min-w-0">
-                        <Icon className="w-4 h-4 shrink-0" />
+                        <Icon className="w-4 h-4 shrink-0" aria-hidden="true" />
                         {!compact && <span className="truncate">{item.label}</span>}
                       </span>
                       {!compact && showUnread && (
@@ -270,10 +283,10 @@ export function WorkspaceShell({
   }
 
   return (
-    <div className="min-h-screen bg-surface text-on-surface flex">
+    <div className="min-h-dvh bg-surface text-on-surface flex">
       {/* Desktop Fixed Sidebar */}
       <aside
-        className={`hidden lg:flex flex-col bg-surface-card border-r border-surface-border shrink-0 transition-all duration-200 sticky top-0 h-screen ${
+        className={`hidden lg:flex flex-col bg-surface-card border-r border-surface-border shrink-0 transition-[width] duration-200 ease-out sticky top-0 h-dvh ${
           collapsed ? 'w-[68px]' : 'w-[244px]'
         }`}
       >
@@ -283,6 +296,9 @@ export function WorkspaceShell({
       {/* Mobile Drawer */}
       {mobileOpen && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Workspace navigation"
           className="lg:hidden fixed inset-0 z-50 flex bg-primary/40 backdrop-blur-xs"
           onClick={(e) => {
             if (e.target === e.currentTarget) setMobileOpen(false);
@@ -313,11 +329,14 @@ export function WorkspaceShell({
               <button
                 type="button"
                 onClick={() => setWsDropdownOpen((o) => !o)}
+                aria-expanded={wsDropdownOpen}
+                aria-haspopup="menu"
+                aria-label={`Switch workspace, current: ${activeWorkspace.name}`}
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-surface-border bg-surface hover:bg-surface-container-low text-xs font-semibold text-on-surface transition-colors cursor-pointer max-w-[210px] sm:max-w-xs"
               >
-                <Building2 className="w-3.5 h-3.5 text-secondary shrink-0" />
+                <Building2 className="w-3.5 h-3.5 text-secondary shrink-0" aria-hidden="true" />
                 <span className="truncate">{activeWorkspace.name}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-text-muted shrink-0" />
+                <ChevronDown className="w-3.5 h-3.5 text-text-muted shrink-0" aria-hidden="true" />
               </button>
 
               {wsDropdownOpen && (

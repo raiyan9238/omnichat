@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { ToastType } from '../../types/omnibook';
 import { CrmCustomer, WorkspaceTenant } from '../../types/workspace';
+import { WorkspaceDialog } from './WorkspaceDialog';
 
 interface CrmViewProps {
   workspace: WorkspaceTenant;
@@ -198,6 +199,7 @@ export function CrmView({
           </button>
 
           <select
+            aria-label="Customer status"
             value={selectedCustomer.status}
             onChange={(e) => {
               const status = e.target.value as CrmCustomer['status'];
@@ -503,9 +505,10 @@ export function CrmView({
       {/* Search & Status Filters */}
       <div className="bg-surface-card border border-surface-border rounded-xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
           <input
             type="text"
+            aria-label="Search customer contacts"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search name, email, phone, or tag..."
@@ -513,11 +516,12 @@ export function CrmView({
           />
         </div>
 
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter contacts by status">
           {(['All', 'VIP', 'Active', 'Lead', 'Inactive'] as const).map((st) => (
             <button
               key={st}
               type="button"
+              aria-pressed={statusFilter === st}
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer ${
                 statusFilter === st
@@ -534,35 +538,54 @@ export function CrmView({
       {/* Directory Table */}
       <div className="bg-surface-card border border-surface-border rounded-xl overflow-hidden">
         {filteredCustomers.length === 0 ? (
-          <div className="p-10 text-center space-y-2">
-            <Users className="w-8 h-8 text-text-muted mx-auto" />
-            <p className="text-sm font-semibold text-on-surface">
-              No matching contacts
-            </p>
-            <p className="text-xs text-text-muted">
-              Adjust your search filters or add a new contact.
-            </p>
+          <div className="p-10 text-center space-y-3">
+            <Users className="w-8 h-8 text-text-muted mx-auto" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-on-surface">
+                No matching contacts
+              </p>
+              <p className="text-xs text-text-muted text-pretty">
+                Adjust your search filters or add a new contact.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSearch('');
+                setStatusFilter('All');
+              }}
+              className="inline-flex items-center px-3.5 py-1.5 rounded-lg border border-surface-border bg-surface text-xs font-semibold text-on-surface hover:bg-surface-container-low cursor-pointer"
+            >
+              Reset Filters
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-surface-border bg-surface text-text-muted font-mono text-[11px] uppercase">
-                  <th className="py-3 px-4 font-semibold">Customer</th>
-                  <th className="py-3 px-4 font-semibold">Contact</th>
-                  <th className="py-3 px-4 font-semibold">Status</th>
-                  <th className="py-3 px-4 font-semibold">Tags</th>
-                  <th className="py-3 px-4 font-semibold">Interactions</th>
-                  <th className="py-3 px-4 font-semibold">Last Touch</th>
-                  <th className="py-3 px-4 font-semibold text-right">Profile</th>
+                  <th scope="col" className="py-3 px-4 font-semibold">Customer</th>
+                  <th scope="col" className="py-3 px-4 font-semibold">Contact</th>
+                  <th scope="col" className="py-3 px-4 font-semibold">Status</th>
+                  <th scope="col" className="py-3 px-4 font-semibold">Tags</th>
+                  <th scope="col" className="py-3 px-4 font-semibold">Interactions</th>
+                  <th scope="col" className="py-3 px-4 font-semibold">Last Touch</th>
+                  <th scope="col" className="py-3 px-4 font-semibold text-right">Profile</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-border">
                 {filteredCustomers.map((c) => (
                   <tr
                     key={c.id}
+                    tabIndex={0}
                     onClick={() => onSelectCustomer(c.id)}
-                    className="hover:bg-surface-container-low/40 cursor-pointer transition-colors"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelectCustomer(c.id);
+                      }
+                    }}
+                    className="hover:bg-surface-container-low/40 focus-visible:bg-surface-container-low/60 focus-visible:outline-2 focus-visible:outline-secondary focus-visible:outline-offset-[-2px] cursor-pointer transition-colors"
                   >
                     <td className="py-3 px-4 whitespace-nowrap">
                       <div className="font-semibold text-on-surface">{c.name}</div>
@@ -623,132 +646,118 @@ export function CrmView({
       </div>
 
       {/* Add Contact Modal */}
-      {addOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-xs"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setAddOpen(false);
-          }}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="w-full max-w-md bg-surface-card border border-surface-border rounded-2xl shadow-xl p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-surface-border">
-              <h3 className="font-display text-base font-bold text-on-surface">
-                Add Customer Contact
-              </h3>
-              <button
-                type="button"
-                onClick={() => setAddOpen(false)}
-                className="text-text-muted hover:text-on-surface cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleAddCustomer} className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-on-surface mb-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="Jordan Taylor"
-                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">
-                    WhatsApp / Phone
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={newPhone}
-                    onChange={(e) => setNewPhone(e.target.value)}
-                    placeholder="+1 (555) 301-2244"
-                    className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    placeholder="jordan@example.com"
-                    className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">
-                    Segment / Service
-                  </label>
-                  <input
-                    type="text"
-                    value={newSegment}
-                    onChange={(e) => setNewSegment(e.target.value)}
-                    placeholder="Consultation Lead"
-                    className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-on-surface mb-1">
-                    Status
-                  </label>
-                  <select
-                    value={newStatus}
-                    onChange={(e) =>
-                      setNewStatus(e.target.value as CrmCustomer['status'])
-                    }
-                    className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                  >
-                    <option value="Lead">Lead</option>
-                    <option value="Active">Active</option>
-                    <option value="VIP">VIP</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block font-semibold text-on-surface mb-1">
-                  Tags (comma separated)
-                </label>
-                <input
-                  type="text"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  placeholder="WhatsApp Opt-In, Morning Slot"
-                  className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
-                />
-              </div>
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setAddOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold text-on-surface cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover cursor-pointer"
-                >
-                  Create Contact
-                </button>
-              </div>
-            </form>
+      <WorkspaceDialog
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        title="Add Customer Contact"
+      >
+        <form onSubmit={handleAddCustomer} className="space-y-3 text-xs">
+          <div>
+            <label htmlFor="crm-new-name" className="block font-semibold text-on-surface mb-1">
+              Full Name
+            </label>
+            <input
+              id="crm-new-name"
+              type="text"
+              required
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Jordan Taylor"
+              className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+            />
           </div>
-        </div>
-      )}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="crm-new-phone" className="block font-semibold text-on-surface mb-1">
+                WhatsApp / Phone
+              </label>
+              <input
+                id="crm-new-phone"
+                type="tel"
+                required
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value)}
+                placeholder="+1 (555) 301-2244"
+                className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+              />
+            </div>
+            <div>
+              <label htmlFor="crm-new-email" className="block font-semibold text-on-surface mb-1">
+                Email
+              </label>
+              <input
+                id="crm-new-email"
+                type="email"
+                required
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="jordan@example.com"
+                className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="crm-new-segment" className="block font-semibold text-on-surface mb-1">
+                Segment / Service
+              </label>
+              <input
+                id="crm-new-segment"
+                type="text"
+                value={newSegment}
+                onChange={(e) => setNewSegment(e.target.value)}
+                placeholder="Consultation Lead"
+                className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+              />
+            </div>
+            <div>
+              <label htmlFor="crm-new-status" className="block font-semibold text-on-surface mb-1">
+                Status
+              </label>
+              <select
+                id="crm-new-status"
+                value={newStatus}
+                onChange={(e) =>
+                  setNewStatus(e.target.value as CrmCustomer['status'])
+                }
+                className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+              >
+                <option value="Lead">Lead</option>
+                <option value="Active">Active</option>
+                <option value="VIP">VIP</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label htmlFor="crm-new-tags" className="block font-semibold text-on-surface mb-1">
+              Tags (comma separated)
+            </label>
+            <input
+              id="crm-new-tags"
+              type="text"
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+              placeholder="WhatsApp Opt-In, Morning Slot"
+              className="w-full rounded-lg border border-surface-border bg-surface px-3 py-2 text-xs text-on-surface"
+            />
+          </div>
+          <div className="pt-2 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setAddOpen(false)}
+              className="px-4 py-2 rounded-lg border border-surface-border text-xs font-semibold text-on-surface cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover cursor-pointer"
+            >
+              Create Contact
+            </button>
+          </div>
+        </form>
+      </WorkspaceDialog>
     </div>
   );
 }

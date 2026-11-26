@@ -248,9 +248,10 @@ export function CallLogsView({
       {/* Filters Toolbar */}
       <div className="bg-surface-card border border-surface-border rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
         <div className="relative lg:col-span-2">
-          <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
           <input
             type="text"
+            aria-label="Search call logs"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -262,6 +263,7 @@ export function CallLogsView({
         </div>
 
         <select
+          aria-label="Filter by call status"
           value={statusFilter}
           onChange={(e) => {
             setStatusFilter(e.target.value as 'All' | CallStatus);
@@ -276,6 +278,7 @@ export function CallLogsView({
         </select>
 
         <select
+          aria-label="Filter by call outcome"
           value={outcomeFilter}
           onChange={(e) => {
             setOutcomeFilter(e.target.value as 'All' | CallOutcome);
@@ -293,6 +296,7 @@ export function CallLogsView({
 
         <div className="flex items-center gap-2">
           <select
+            aria-label="Filter by AI agent"
             value={agentFilter}
             onChange={(e) => {
               setAgentFilter(e.target.value);
@@ -308,6 +312,7 @@ export function CallLogsView({
             ))}
           </select>
           <select
+            aria-label="Filter by date range"
             value={dateFilter}
             onChange={(e) => {
               setDateFilter(e.target.value as 'all' | 'today' | '7d');
@@ -325,14 +330,30 @@ export function CallLogsView({
       {/* Table */}
       <div className="bg-surface-card border border-surface-border rounded-xl overflow-hidden">
         {paginatedCalls.length === 0 ? (
-          <div className="p-10 text-center space-y-2">
-            <PhoneCall className="w-8 h-8 text-text-muted mx-auto" />
-            <p className="text-sm font-semibold text-on-surface">
-              No call logs match your filters
-            </p>
-            <p className="text-xs text-text-muted">
-              Try clearing your search or switching status/outcome filters.
-            </p>
+          <div className="p-10 text-center space-y-3">
+            <PhoneCall className="w-8 h-8 text-text-muted mx-auto" aria-hidden="true" />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-on-surface">
+                No call logs match your filters
+              </p>
+              <p className="text-xs text-text-muted text-pretty">
+                Try clearing your search or switching status/outcome filters.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSearch('');
+                setStatusFilter('All');
+                setOutcomeFilter('All');
+                setAgentFilter('All');
+                setDateFilter('all');
+                setPage(1);
+              }}
+              className="inline-flex items-center px-3.5 py-1.5 rounded-lg border border-surface-border bg-surface text-xs font-semibold text-on-surface hover:bg-surface-container-low cursor-pointer"
+            >
+              Reset Filters
+            </button>
           </div>
         ) : (
           <>
@@ -340,40 +361,59 @@ export function CallLogsView({
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="border-b border-surface-border bg-surface text-text-muted font-mono text-[11px] uppercase">
-                    <th className="py-3 px-4 font-semibold">Caller</th>
-                    <th className="py-3 px-4 font-semibold">
+                    <th scope="col" className="py-3 px-4 font-semibold">Caller</th>
+                    <th
+                      scope="col"
+                      aria-sort={sortBy === 'date' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
+                      className="py-3 px-4 font-semibold"
+                    >
                       <button
                         type="button"
                         onClick={() => toggleSort('date')}
-                        className="inline-flex items-center gap-1 hover:text-on-surface cursor-pointer"
+                        className={`inline-flex items-center gap-1 hover:text-on-surface cursor-pointer ${
+                          sortBy === 'date' ? 'text-secondary' : ''
+                        }`}
                       >
                         <span>Date &amp; Time</span>
-                        <ArrowUpDown className="w-3 h-3" />
+                        <ArrowUpDown className="w-3 h-3" aria-hidden="true" />
                       </button>
                     </th>
-                    <th className="py-3 px-4 font-semibold">
+                    <th
+                      scope="col"
+                      aria-sort={sortBy === 'duration' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
+                      className="py-3 px-4 font-semibold"
+                    >
                       <button
                         type="button"
                         onClick={() => toggleSort('duration')}
-                        className="inline-flex items-center gap-1 hover:text-on-surface cursor-pointer"
+                        className={`inline-flex items-center gap-1 hover:text-on-surface cursor-pointer ${
+                          sortBy === 'duration' ? 'text-secondary' : ''
+                        }`}
                       >
                         <span>Duration</span>
-                        <ArrowUpDown className="w-3 h-3" />
+                        <ArrowUpDown className="w-3 h-3" aria-hidden="true" />
                       </button>
                     </th>
-                    <th className="py-3 px-4 font-semibold">Status</th>
-                    <th className="py-3 px-4 font-semibold">AI Agent</th>
-                    <th className="py-3 px-4 font-semibold">Outcome</th>
-                    <th className="py-3 px-4 font-semibold">Summary</th>
-                    <th className="py-3 px-4 font-semibold text-right">Details</th>
+                    <th scope="col" className="py-3 px-4 font-semibold">Status</th>
+                    <th scope="col" className="py-3 px-4 font-semibold">AI Agent</th>
+                    <th scope="col" className="py-3 px-4 font-semibold">Outcome</th>
+                    <th scope="col" className="py-3 px-4 font-semibold">Summary</th>
+                    <th scope="col" className="py-3 px-4 font-semibold text-right">Details</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-surface-border">
                   {paginatedCalls.map((call) => (
                     <tr
                       key={call.id}
+                      tabIndex={0}
                       onClick={() => onSelectCall(call.id)}
-                      className="hover:bg-surface-container-low/40 cursor-pointer transition-colors"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          onSelectCall(call.id);
+                        }
+                      }}
+                      className="hover:bg-surface-container-low/40 focus-visible:bg-surface-container-low/60 focus-visible:outline-2 focus-visible:outline-secondary focus-visible:outline-offset-[-2px] cursor-pointer transition-colors"
                     >
                       <td className="py-3 px-4 whitespace-nowrap">
                         <div className="font-semibold text-on-surface">{call.callerName}</div>

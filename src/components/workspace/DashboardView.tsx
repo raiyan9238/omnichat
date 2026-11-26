@@ -186,24 +186,25 @@ export function DashboardView({
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-display text-2xl font-bold text-on-surface tracking-tight">
+            <h1 className="font-display text-2xl font-bold text-on-surface tracking-tight text-balance">
               {workspace.name}
             </h1>
-            <span className="px-2 py-0.5 rounded-full font-mono text-[10px] font-semibold bg-badge-web-bg text-badge-web-text border border-channel-web/20">
+            <span className="px-2 py-0.5 rounded-full font-mono text-[10px] font-semibold bg-badge-web-bg text-badge-web-text border border-channel-web/20 tabular-nums">
               {workspace.phoneNumbers[0]?.number ?? 'Unassigned'}
             </span>
           </div>
-          <p className="text-xs text-text-muted mt-1">
+          <p className="text-xs text-text-muted mt-1 text-pretty">
             {workspace.industry} · {workspace.agents.filter((a) => a.status === 'Active').length} active AI receptionists handling Voice, WhatsApp &amp; social channels.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-lg border border-surface-border bg-surface-card p-0.5">
+          <div className="inline-flex rounded-lg border border-surface-border bg-surface-card p-0.5" role="group" aria-label="Dashboard date range">
             {(['7d', '30d', '90d'] as DateRangeKey[]).map((range) => (
               <button
                 key={range}
                 type="button"
+                aria-pressed={dateRange === range}
                 onClick={() => setDateRange(range)}
                 className={`px-2.5 py-1 rounded-md font-mono text-[11px] font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                   dateRange === range
@@ -222,7 +223,7 @@ export function DashboardView({
               onClick={() => onNavigate('agents')}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-white text-xs font-semibold hover:bg-accent-hover transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-3.5 h-3.5" aria-hidden="true" />
               <span>AI Agents</span>
             </button>
           )}
@@ -232,7 +233,7 @@ export function DashboardView({
               onClick={() => onNavigate('numbers')}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-border bg-surface-card text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <PhoneForwarded className="w-3.5 h-3.5 text-secondary" />
+              <PhoneForwarded className="w-3.5 h-3.5 text-secondary" aria-hidden="true" />
               <span>Numbers</span>
             </button>
           )}
@@ -242,7 +243,7 @@ export function DashboardView({
               onClick={() => onNavigate('marketing')}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-border bg-surface-card text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <Megaphone className="w-3.5 h-3.5 text-secondary" />
+              <Megaphone className="w-3.5 h-3.5 text-secondary" aria-hidden="true" />
               <span>Campaigns</span>
             </button>
           )}
@@ -252,33 +253,58 @@ export function DashboardView({
               onClick={() => onNavigate('api-keys')}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-surface-border bg-surface-card text-xs font-semibold text-on-surface hover:bg-surface-container-low transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
-              <KeyRound className="w-3.5 h-3.5 text-secondary" />
+              <KeyRound className="w-3.5 h-3.5 text-secondary" aria-hidden="true" />
               <span>API Keys</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* 8 KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpis.map((kpi) => {
-          const Icon = kpi.icon;
-          return (
-            <div
-              key={kpi.label}
-              className="bg-surface-card border border-surface-border rounded-xl p-4 flex flex-col justify-between gap-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-text-muted">{kpi.label}</span>
-                <Icon className={`w-4 h-4 ${kpi.tone}`} />
+      {/* Primary Volume KPIs (Row 1) & Efficiency/Quality KPIs (Row 2) */}
+      <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {kpis.slice(0, 4).map((kpi) => {
+            const Icon = kpi.icon;
+            return (
+              <div
+                key={kpi.label}
+                className="bg-surface-card border border-surface-border rounded-xl p-4 flex flex-col justify-between gap-2.5 shadow-2xs"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-text-main">{kpi.label}</span>
+                  <span className="size-7 rounded-lg bg-surface-container-low flex items-center justify-center shrink-0">
+                    <Icon className={`w-3.5 h-3.5 ${kpi.tone}`} aria-hidden="true" />
+                  </span>
+                </div>
+                <div className="font-display text-2xl font-bold text-on-surface tabular-nums">
+                  {kpi.value}
+                </div>
+                <div className="font-mono text-[11px] text-text-muted tabular-nums">{kpi.delta}</div>
               </div>
-              <div className="font-display text-2xl font-bold text-on-surface tabular-nums">
-                {kpi.value}
+            );
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {kpis.slice(4).map((kpi) => {
+            const Icon = kpi.icon;
+            return (
+              <div
+                key={kpi.label}
+                className="bg-surface-container-low/45 border border-surface-border rounded-xl px-4 py-3 flex flex-col justify-between gap-1.5"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-medium text-text-muted">{kpi.label}</span>
+                  <Icon className={`w-3.5 h-3.5 ${kpi.tone}`} aria-hidden="true" />
+                </div>
+                <div className="font-display text-xl font-bold text-on-surface tabular-nums">
+                  {kpi.value}
+                </div>
+                <div className="font-mono text-[11px] text-text-muted tabular-nums">{kpi.delta}</div>
               </div>
-              <div className="font-mono text-[11px] text-text-muted">{kpi.delta}</div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Primary Charts Row */}
